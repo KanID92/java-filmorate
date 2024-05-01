@@ -12,13 +12,15 @@ import java.util.Map;
 @Slf4j
 public class ValidationServiceImpl implements ValidationService {
 
+    public static final LocalDate FIRSTFILMDATE = LocalDate.of(1895, Month.DECEMBER, 28);
+
     @Override
     public void validateCreate(User user) {
         if (!user.getEmail().contains("@") || user.getEmail().isBlank()) {
             log.error("Неверный формат электронной почты");
             throw new ValidationException("Неверный формат электронной почты");
         }
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+        if (user.getLogin().isBlank()) {
             throw new ValidationException("Неверный формат логина");
         }
         if (user.getBirthday().isAfter(LocalDate.now())) {
@@ -50,7 +52,7 @@ public class ValidationServiceImpl implements ValidationService {
             throw new ValidationException("Максимальная длина описания фильма - не более 200 символов.");
         }
 
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, Month.DECEMBER, 28))) {
+        if (film.getReleaseDate().isBefore(FIRSTFILMDATE)) {
             log.warn("Дата релиза фильма - раньше 28 декабря 1895 года");
             throw new ValidationException("Дата релиза фильма - не раньше 28 декабря 1895 года.");
         }

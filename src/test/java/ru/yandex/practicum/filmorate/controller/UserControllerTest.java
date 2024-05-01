@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validation.ValidationService;
+import ru.yandex.practicum.filmorate.validation.ValidationServiceImpl;
 
 import java.time.LocalDate;
 
@@ -11,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
 
-    UserController userController = new UserController();
+    private final ValidationService validationService = new ValidationServiceImpl();
+    private final UserController userController = new UserController(validationService);
     User user1;
     User user2;
     User user3;
@@ -42,32 +45,32 @@ class UserControllerTest {
 
     @Test
     void shouldValidateUser() {
-        assertDoesNotThrow(() -> userController.validationService.validateCreate(user1));
+        assertDoesNotThrow(() -> validationService.validateCreate(user1));
     }
 
     @Test
     void shouldNotValidateBadEmail() {
         user1.setEmail("1ya.ru");
-        assertThrows(ValidationException.class, () -> userController.validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
         user1.setEmail(" ");
-        assertThrows(ValidationException.class, () -> userController.validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
     }
 
     @Test
     void shouldNotValidateEmptyLogin() {
         user1.setLogin(" ");
-        assertThrows(ValidationException.class, () -> userController.validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
     }
 
     @Test
     void shouldNotValidateBirthdayDate() {
         user1.setBirthday(LocalDate.of(2932, 1, 15));
-        assertThrows(ValidationException.class, () -> userController.validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
     }
 
     @Test
     void shouldSetNameAsLogin() {
-        assertDoesNotThrow(() -> userController.validationService.validateCreate(user3));
+        assertDoesNotThrow(() -> validationService.validateCreate(user3));
         assertEquals(user3.getName(), user3.getLogin());
     }
 

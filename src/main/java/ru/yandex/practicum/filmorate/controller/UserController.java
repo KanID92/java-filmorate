@@ -15,7 +15,16 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     Map<Long, User> users = new HashMap<>();
-    ValidationService validationService = this.validationService = new ValidationServiceImpl();
+    private final ValidationService validationService;
+    private long idCounter = 0;
+
+    public UserController() {
+        this.validationService = new ValidationServiceImpl();
+    }
+
+    public UserController(ValidationService validationService) {
+        this.validationService = validationService;
+    }
 
     @GetMapping
     public Collection<User> getAllUsers() {
@@ -47,12 +56,7 @@ public class UserController {
     }
 
     private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++idCounter;
     }
 
 }

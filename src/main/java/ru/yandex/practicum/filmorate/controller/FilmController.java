@@ -14,8 +14,17 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    final Map<Long, Film> films = new HashMap<>();
-    final ValidationService validationService = new ValidationServiceImpl();
+    private final Map<Long, Film> films = new HashMap<>();
+    private final ValidationService validationService;
+    private long idCounter = 0;
+
+    public FilmController() {
+        this.validationService = new ValidationServiceImpl();
+    }
+
+    public FilmController(ValidationService validationService) {
+        this.validationService = validationService;
+    }
 
 
     @GetMapping
@@ -45,13 +54,9 @@ public class FilmController {
     }
 
     private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++idCounter;
     }
+
 
 }
 

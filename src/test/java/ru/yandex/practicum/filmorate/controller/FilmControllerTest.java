@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.validation.ValidationService;
+import ru.yandex.practicum.filmorate.validation.ValidationServiceImpl;
 
 import java.time.LocalDate;
 
@@ -12,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FilmControllerTest {
 
-    FilmController filmController = new FilmController();
+    ValidationService validationService = new ValidationServiceImpl();
+    FilmController filmController = new FilmController(validationService);
     Film film1;
     Film film2;
     Film film3;
@@ -45,19 +48,19 @@ class FilmControllerTest {
 
     @Test
     void shouldValidateFilm() {
-        assertDoesNotThrow(() -> filmController.validationService.validateCreate(film1));
+        assertDoesNotThrow(() -> validationService.validateCreate(film1));
     }
 
     @Test
     void shouldNotValidateBadReleaseDateFilm() {
         film2.setReleaseDate(LocalDate.of(1007, 3, 1));
-        assertThrows(ValidationException.class, () -> filmController.validationService.validateCreate(film2));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(film2));
     }
 
     @Test
     void shouldNotValidateNegativeDurationFilm() {
         film2.setDuration(-180);
-        assertThrows(ValidationException.class, () -> filmController.validationService.validateCreate(film2));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(film2));
     }
 
     @Test
@@ -65,15 +68,15 @@ class FilmControllerTest {
         String description = "x".repeat(201);
 
         film2.setDescription(description);
-        assertThrows(ValidationException.class, () -> filmController.validationService.validateCreate(film2));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(film2));
     }
 
     @Test
     void shouldNotValidateNoNameFilm() {
         film2.setName(null);
-        assertThrows(ValidationException.class, () -> filmController.validationService.validateCreate(film2));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(film2));
         film2.setName("");
-        assertThrows(ValidationException.class, () -> filmController.validationService.validateCreate(film2));
+        assertThrows(ValidationException.class, () -> validationService.validateCreate(film2));
     }
 
 
