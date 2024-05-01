@@ -1,0 +1,62 @@
+package ru.yandex.practicum.filmorate.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validation.ValidationService;
+import ru.yandex.practicum.filmorate.validation.ValidationServiceImpl;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+@Slf4j
+@RestController
+@RequestMapping("/users")
+public class UserController {
+    private final Map<Long, User> users = new HashMap<>();
+    private final ValidationService validationService;
+    private long idCounter = 0;
+
+    public UserController() {
+        this.validationService = new ValidationServiceImpl();
+    }
+
+    public UserController(ValidationService validationService) {
+        this.validationService = validationService;
+    }
+
+    @GetMapping
+    public Collection<User> getAllUsers() {
+        log.info("==> GET /users ");
+        log.info("<== GET /users Список пользователей размером: " + users.values().size() + " возвращен");
+        return users.values();
+    }
+
+    @PostMapping
+    public User addUser(@RequestBody User user) {
+        log.info("==> GET /users " + user);
+        validationService.validateCreate(user);
+        user.setId(getNextId());
+        users.put(user.getId(), user);
+        log.info("<== GET /users " + user);
+        return user;
+    }
+
+    @PutMapping
+    public User updateUser(@RequestBody User user) {
+        log.info("==> PUT /users " + user);
+        validationService.validateUpdate(user, users);
+        if (user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        users.put(user.getId(), user);
+        log.info("<== PUT /users " + user);
+        return user;
+    }
+
+    private long getNextId() {
+        return ++idCounter;
+    }
+
+}
