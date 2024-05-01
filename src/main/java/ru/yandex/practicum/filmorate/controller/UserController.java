@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    Map<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
     private final ValidationService validationService;
     private long idCounter = 0;
 

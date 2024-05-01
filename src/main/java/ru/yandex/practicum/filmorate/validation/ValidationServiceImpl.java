@@ -12,7 +12,7 @@ import java.util.Map;
 @Slf4j
 public class ValidationServiceImpl implements ValidationService {
 
-    public static final LocalDate FIRSTFILMDATE = LocalDate.of(1895, Month.DECEMBER, 28);
+    public static final LocalDate FIRST_FILM_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
 
     @Override
     public void validateCreate(User user) {
@@ -52,7 +52,7 @@ public class ValidationServiceImpl implements ValidationService {
             throw new ValidationException("Максимальная длина описания фильма - не более 200 символов.");
         }
 
-        if (film.getReleaseDate().isBefore(FIRSTFILMDATE)) {
+        if (film.getReleaseDate().isBefore(FIRST_FILM_DATE)) {
             log.warn("Дата релиза фильма - раньше 28 декабря 1895 года");
             throw new ValidationException("Дата релиза фильма - не раньше 28 декабря 1895 года.");
         }
