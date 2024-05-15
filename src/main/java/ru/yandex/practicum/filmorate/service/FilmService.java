@@ -1,70 +1,54 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final ValidationService validationService;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService, ValidationService validationService) {
-        this.filmStorage = filmStorage;
-        this.userService = userService;
-        this.validationService = validationService;
-    }
-
     public Film getById(long filmId) {
-        return validationService.validateFilmExisting(filmId, filmStorage.getAll());
+        return filmStorage.getById(filmId);
     }
 
     public Film save(Film film) {
+        validationService.validateNewData(film);
         return filmStorage.save(film);
     }
 
-    public void addLike(Long filmId, Long userId) {
-        Film film = filmStorage.getAll().get(filmId);
-        User user = userService.getAll().get(userId);
-        if (film == null) {
-            throw new NotFoundException("Фильм для добавления лайка не найден");
-        }
-        if (user == null) {
-            throw new NotFoundException("Пользователь, добавляющий лайк фильму - не найден");
-        }
+    public Film update(Film film) {
+        validationService.validateNewData(film);
+        return filmStorage.update(film);
+    }
+
+    public void addLike(long filmId, long userId) {
+        Film film = filmStorage.getById(filmId);
+        userService.getById(userId);
         film.getUsersLikes().add(userId);
     }
 
     public void deleteLike(long filmId, long userId) {
-        Film film = filmStorage.getAll().get(filmId);
-        User user = userService.getAll().get(userId);
-        if (film == null) {
-            throw new NotFoundException("Фильм для удаления лайка не найден");
-        }
-        if (user == null) {
-            throw new NotFoundException("Пользователь, удаляющий лайк фильму - не найден");
-        }
-
-        filmStorage.getAll().get(filmId).getUsersLikes().remove(userId);
+        Film film = filmStorage.getById(filmId);
+        userService.getById(userId);
+        film.getUsersLikes().remove(userId);
     }
 
-    public Map<Long, Film> getAll() {
+    public Collection<Film> getAll() {
         return filmStorage.getAll();
     }
 
     public Collection<Film> getMostLikedFilms(long limit) {
-        return List.copyOf(filmStorage.getAll().values())
+        return List.copyOf(filmStorage.getAll())
                 .stream()
                 .sorted(new Comparator<Film>() {
                     @Override

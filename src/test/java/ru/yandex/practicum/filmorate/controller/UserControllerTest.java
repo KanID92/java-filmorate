@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserControllerTest {
 
     private final ValidationService validationService = new ValidationServiceImpl();
-    private final UserService userService = new UserService(new InMemoryUserStorage(), validationService);
+    private final UserService userService = new UserService(new InMemoryUserStorage(validationService), validationService);
 
     private final UserController userController = new UserController(userService, validationService);
     User user1;
@@ -49,32 +49,32 @@ class UserControllerTest {
 
     @Test
     void shouldValidateUser() {
-        assertDoesNotThrow(() -> validationService.validateCreate(user1));
+        assertDoesNotThrow(() -> validationService.validateNewData(user1));
     }
 
     @Test
     void shouldNotValidateBadEmail() {
         user1.setEmail("1ya.ru");
-        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateNewData(user1));
         user1.setEmail(" ");
-        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateNewData(user1));
     }
 
     @Test
     void shouldNotValidateEmptyLogin() {
         user1.setLogin(" ");
-        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateNewData(user1));
     }
 
     @Test
     void shouldNotValidateBirthdayDate() {
         user1.setBirthday(LocalDate.of(2932, 1, 15));
-        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateNewData(user1));
     }
 
     @Test
     void shouldSetNameAsLogin() {
-        assertDoesNotThrow(() -> validationService.validateCreate(user3));
+        assertDoesNotThrow(() -> validationService.validateNewData(user3));
         assertEquals(user3.getName(), user3.getLogin());
     }
 

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -11,19 +11,13 @@ import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
     private final ValidationService validationService;
 
     private long idCounter = 0;
-
-    @Autowired
-    public FilmController(FilmService filmService, ValidationService validationService) {
-        this.filmService = filmService;
-        this.validationService = validationService;
-    }
 
     @GetMapping("/films/{id}")
     public Film get(@PathVariable long id) {
@@ -36,9 +30,10 @@ public class FilmController {
     @GetMapping("/films")
     public Collection<Film> getAll() {
         log.info("==> GET /films ");
+        Collection<Film> allFilms = filmService.getAll();
         log.info("<== GET /films Список всех сохраненных фильмов размером: "
-                + filmService.getAll().values().size() + " возвращен");
-        return filmService.getAll().values();
+                + allFilms.size() + " возвращен");
+        return allFilms;
     }
 
     @GetMapping("/films/popular")
@@ -53,7 +48,6 @@ public class FilmController {
     @PostMapping("/films")
     public Film save(@RequestBody Film film) {
         log.info("==> POST /films " + film);
-        validationService.validateCreate(film);
         film.setId(getNextId());
         log.info("Фильм добавлен в коллекцию.");
         log.info("<== POST /films" + film);
@@ -63,10 +57,9 @@ public class FilmController {
     @PutMapping("/films")
     public Film update(@RequestBody Film film) {
         log.info("==> PUT /films " + film);
-        validationService.validateUpdate(film, filmService.getAll());
         log.info("Информация о фильме обновлена.");
         log.info("<== PUT /films" + film);
-        return filmService.save(film);
+        return filmService.update(film);
     }
 
     @PutMapping("/films/{id}/like/{userId}")

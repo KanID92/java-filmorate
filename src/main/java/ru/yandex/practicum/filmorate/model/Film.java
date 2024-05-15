@@ -12,10 +12,10 @@ import java.util.Set;
  */
 @Data
 public class Film {
-    long id;
-    String name;
-    String description;
-    LocalDate releaseDate;
-    int duration; // Длительность в минутах
-    Set<Long> usersLikes = new HashSet<>();
+    private long id;
+    private String name;
+    private String description;
+    private LocalDate releaseDate;
+    private int duration; // Длительность в минутах
+    private Set<Long> usersLikes = new HashSet<>();
 }

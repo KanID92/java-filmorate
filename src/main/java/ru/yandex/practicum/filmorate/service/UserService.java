@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -12,46 +11,35 @@ import java.util.Map;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserStorage userStorage;
 
     private final ValidationService validationService;
 
-    @Autowired
-    public UserService(UserStorage userStorage, ValidationService validationService) {
-        this.userStorage = userStorage;
-        this.validationService = validationService;
-    }
-
     public User getById(long userId) {
         return validationService.validateUserExisting(userId, userStorage.getAll());
     }
 
     public void addFriend(long userId1, long userId2) {
-        User user1 = userStorage.getAll().get(userId1);
-        User user2 = userStorage.getAll().get(userId2);
-        if (user1 == null || user2 == null) {
-            throw new NotFoundException("Один из пользователей добавляемых в друзья - не найден");
-        }
+        User user1 = userStorage.getById(userId1);
+        User user2 = userStorage.getById(userId2);
         user1.getFriends().add(userId2);
         user2.getFriends().add(userId1);
     }
 
     public void deleteFriend(long userId1, long userId2) {
-        User user1 = userStorage.getAll().get(userId1);
-        User user2 = userStorage.getAll().get(userId2);
-        if (user1 == null || user2 == null) {
-            throw new NotFoundException("Один из пользователей удаляемых из друзей - не найден");
-        }
-        userStorage.getAll().get(userId1).getFriends().remove(userId2);
-        userStorage.getAll().get(userId2).getFriends().remove(userId1);
+        User user1 = userStorage.getById(userId1);
+        User user2 = userStorage.getById(userId2);
+        user1.getFriends().remove(userId2);
+        user2.getFriends().remove(userId1);
     }
 
     public Collection<User> getFriends(long userId) {
         Map<Long, User> allUsers = userStorage.getAll();
         validationService.validateUserExisting(userId, allUsers);
-        Set<Long> userFriendsIds = userStorage.getUserFriends(userId);
+        Set<Long> userFriendsIds = userStorage.getById(userId).getFriends();
         Set<User> userFriends = new HashSet<>();
 
         for (Long userFriendId : userFriendsIds) {
@@ -78,8 +66,15 @@ public class UserService {
     }
 
     public User save(User user) {
+        validationService.validateNewData(user);
         return userStorage.save(user);
     }
+
+    public User update(User user) {
+        validationService.validateNewData(user);
+        return userStorage.update(user);
+    }
+
 }
 
 

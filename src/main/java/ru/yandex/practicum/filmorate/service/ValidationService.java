@@ -8,13 +8,9 @@ import java.util.Map;
 
 @Service
 public interface ValidationService {
-    void validateCreate(Film film);
+    void validateNewData(Film film);
 
-    void validateUpdate(Film film, Map<Long, Film> filmMap);
-
-    void validateCreate(User user);
-
-    void validateUpdate(User user, Map<Long, User> userMap);
+    void validateNewData(User user);
 
     Film validateFilmExisting(long filmId, Map<Long, Film> filmMap);
 

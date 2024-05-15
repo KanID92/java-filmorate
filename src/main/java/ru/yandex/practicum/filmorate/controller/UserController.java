@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -11,25 +11,20 @@ import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final ValidationService validationService;
     private long idCounter = 0;
 
-    @Autowired
-    public UserController(UserService userService, ValidationService validationService) {
-        this.userService = userService;
-        this.validationService = validationService;
-    }
-
     @GetMapping("/users")
     public Collection<User> getAll() {
         log.info("==> GET /users ");
+        Collection<User> allUsers = userService.getAll().values();
         log.info("<== GET /users Список пользователей размером: "
-                + userService.getAll().values().size() + " возвращен");
-        return userService.getAll().values();
+                + allUsers.size() + " возвращен");
+        return allUsers;
     }
 
     @GetMapping("/users/{id}")
@@ -60,7 +55,6 @@ public class UserController {
     @PostMapping("/users")
     public User save(@RequestBody User user) {
         log.info("==> GET /users " + user);
-        validationService.validateCreate(user);
         user.setId(getNextId());
         log.info("<== GET /users " + user);
         return userService.save(user);
@@ -69,12 +63,11 @@ public class UserController {
     @PutMapping("/users")
     public User update(@RequestBody User user) {
         log.info("==> PUT /users " + user);
-        validationService.validateUpdate(user, userService.getAll());
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         log.info("<== PUT /users " + user);
-        return userService.save(user);
+        return userService.update(user);
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")

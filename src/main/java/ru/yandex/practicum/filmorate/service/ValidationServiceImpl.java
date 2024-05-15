@@ -29,7 +29,7 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
-    public void validateCreate(User user) {
+    public void validateNewData(User user) {
         if (!user.getEmail().contains("@") || user.getEmail().isBlank()) {
             log.error("Неверный формат электронной почты");
             throw new ValidationException("Неверный формат электронной почты");
@@ -45,11 +45,6 @@ public class ValidationServiceImpl implements ValidationService {
         }
     }
 
-    @Override
-    public void validateUpdate(User user, Map<Long, User> userMap) {
-        validateCreate(validateUserExisting(user.getId(), userMap));
-    }
-
     //FILM VALIDATIONS
     @Override
     public Film validateFilmExisting(long filmId, Map<Long, Film> filmMap) {
@@ -62,7 +57,7 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
-    public void validateCreate(Film film) {
+    public void validateNewData(Film film) {
         if (film.getName() == null || film.getName().isBlank()) {
             log.warn("Название фильма - пустое.");
             throw new ValidationException("Название фильма не должно быть пустым.");
@@ -84,6 +79,6 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     public void validateUpdate(Film film, Map<Long, Film> filmMap) {
-        validateCreate(validateFilmExisting(film.getId(), filmMap));
+        validateNewData(validateFilmExisting(film.getId(), filmMap));
     }
 }
