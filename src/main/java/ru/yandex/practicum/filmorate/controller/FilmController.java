@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.ValidationService;
 
 import java.util.Collection;
 
@@ -15,9 +14,6 @@ import java.util.Collection;
 public class FilmController {
 
     private final FilmService filmService;
-    private final ValidationService validationService;
-
-    private long idCounter = 0;
 
     @GetMapping("/films/{id}")
     public Film get(@PathVariable long id) {
@@ -48,18 +44,17 @@ public class FilmController {
     @PostMapping("/films")
     public Film save(@RequestBody Film film) {
         log.info("==> POST /films " + film);
-        film.setId(getNextId());
-        log.info("Фильм добавлен в коллекцию.");
-        log.info("<== POST /films" + film);
-        return filmService.save(film);
+        Film newFilm = filmService.save(film);
+        log.info("<== POST /films" + newFilm);
+        return newFilm;
     }
 
     @PutMapping("/films")
     public Film update(@RequestBody Film film) {
         log.info("==> PUT /films " + film);
-        log.info("Информация о фильме обновлена.");
-        log.info("<== PUT /films" + film);
-        return filmService.update(film);
+        Film updatedFilm = filmService.update(film);
+        log.info("<== PUT /films" + updatedFilm);
+        return updatedFilm;
     }
 
     @PutMapping("/films/{id}/like/{userId}")
@@ -76,10 +71,6 @@ public class FilmController {
         filmService.deleteLike(id, userId);
         log.info("<== DELETE /films/" + id + "/like/" + userId + "  Лайк фильму " + filmService.getById(id)
                 + " от пользователя с ID=" + userId + " удален");
-    }
-
-    private long getNextId() {
-        return ++idCounter;
     }
 
 

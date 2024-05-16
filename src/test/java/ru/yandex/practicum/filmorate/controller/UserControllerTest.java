@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserControllerTest {
 
     private final ValidationService validationService = new ValidationServiceImpl();
-    private final UserService userService = new UserService(new InMemoryUserStorage(validationService), validationService);
+    private final UserService userService = new UserService(new InMemoryUserStorage(), validationService);
 
-    private final UserController userController = new UserController(userService, validationService);
+    private final UserController userController = new UserController(userService);
     User user1;
     User user2;
     User user3;

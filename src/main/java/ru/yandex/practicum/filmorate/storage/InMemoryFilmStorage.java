@@ -1,41 +1,50 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.ValidationService;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Long, Film> films = new HashMap<>();
-    private final ValidationService validationService;
+    private long idCounter = 0;
 
     @Override
     public Film getById(long filmId) {
-        return validationService.validateFilmExisting(filmId, films);
+        Film film = films.get(filmId);
+        if (film == null) {
+            log.error("Фильма с данным ID = " + filmId + " не найдено");
+            throw new NotFoundException("Фильм не найден");
+        }
+        return film;
     }
 
     @Override
     public Film save(Film film) {
+        film.setId(getNextId());
         films.put(film.getId(), film);
         return films.get(film.getId());
     }
 
     @Override
     public Film update(Film film) {
-        validationService.validateFilmExisting(film.getId(), films);
-        return save(film);
+        getById(film.getId());
+        films.put(film.getId(), film);
+        return films.get(film.getId());
     }
 
     @Override
     public void delete(long filmId) {
-        validationService.validateFilmExisting(filmId, films);
+        getById(filmId);
         films.remove(filmId);
     }
 
@@ -44,5 +53,8 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.values();
     }
 
+    private long getNextId() {
+        return ++idCounter;
+    }
 
 }

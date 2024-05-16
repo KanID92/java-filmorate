@@ -19,11 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class FilmControllerTest {
 
     ValidationService validationService = new ValidationServiceImpl();
-    FilmService filmService = new FilmService(new InMemoryFilmStorage(validationService),
-            new UserService(new InMemoryUserStorage(validationService), validationService), validationService);
+    FilmService filmService = new FilmService(new InMemoryFilmStorage(),
+            new UserService(new InMemoryUserStorage(), validationService), validationService);
 
 
-    FilmController filmController = new FilmController(filmService, validationService);
+    FilmController filmController = new FilmController(filmService);
     Film film1;
     Film film2;
     Film film3;

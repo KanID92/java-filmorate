@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -50,12 +49,7 @@ public class FilmService {
     public Collection<Film> getMostLikedFilms(long limit) {
         return List.copyOf(filmStorage.getAll())
                 .stream()
-                .sorted(new Comparator<Film>() {
-                    @Override
-                    public int compare(Film f1, Film f2) {
-                        return f2.getUsersLikes().size() - f1.getUsersLikes().size();
-                    }
-                })
+                .sorted((f1, f2) -> f2.getUsersLikes().size() - f1.getUsersLikes().size())
                 .limit(limit)
                 .toList();
     }

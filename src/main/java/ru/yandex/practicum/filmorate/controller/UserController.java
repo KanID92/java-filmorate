@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.service.ValidationService;
 
 import java.util.Collection;
 
@@ -15,13 +14,12 @@ import java.util.Collection;
 public class UserController {
 
     private final UserService userService;
-    private final ValidationService validationService;
-    private long idCounter = 0;
+
 
     @GetMapping("/users")
     public Collection<User> getAll() {
         log.info("==> GET /users ");
-        Collection<User> allUsers = userService.getAll().values();
+        Collection<User> allUsers = userService.getAll();
         log.info("<== GET /users Список пользователей размером: "
                 + allUsers.size() + " возвращен");
         return allUsers;
@@ -54,10 +52,10 @@ public class UserController {
 
     @PostMapping("/users")
     public User save(@RequestBody User user) {
-        log.info("==> GET /users " + user);
-        user.setId(getNextId());
-        log.info("<== GET /users " + user);
-        return userService.save(user);
+        log.info("==> POST /users " + user);
+        User newUser = userService.save(user);
+        log.info("<== POST /users " + newUser);
+        return newUser;
     }
 
     @PutMapping("/users")
@@ -66,8 +64,9 @@ public class UserController {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        log.info("<== PUT /users " + user);
-        return userService.update(user);
+        User updatedUser = userService.update(user);
+        log.info("<== PUT /users " + updatedUser);
+        return updatedUser;
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
@@ -80,8 +79,5 @@ public class UserController {
         userService.deleteFriend(id, friendId);
     }
 
-    private long getNextId() {
-        return ++idCounter;
-    }
 
 }

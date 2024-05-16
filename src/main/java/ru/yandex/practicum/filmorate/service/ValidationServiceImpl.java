@@ -2,14 +2,12 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -18,15 +16,6 @@ public class ValidationServiceImpl implements ValidationService {
     public static final LocalDate FIRST_FILM_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
 
     //USER VALIDATIONS
-    @Override
-    public User validateUserExisting(long userId, Map<Long, User> userMap) {
-        User user = userMap.get(userId);
-        if (user == null) {
-            log.error("Пользователя с переданным ID = " + userId + " не найдено");
-            throw new NotFoundException("Пользователь не найден");
-        }
-        return user;
-    }
 
     @Override
     public void validateNewData(User user) {
@@ -46,15 +35,6 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     //FILM VALIDATIONS
-    @Override
-    public Film validateFilmExisting(long filmId, Map<Long, Film> filmMap) {
-        Film film = filmMap.get(filmId);
-        if (film == null) {
-            log.error("Фильма с данным ID = " + filmId + " не найдено");
-            throw new NotFoundException("Фильм не найден");
-        }
-        return film;
-    }
 
     @Override
     public void validateNewData(Film film) {
@@ -78,7 +58,4 @@ public class ValidationServiceImpl implements ValidationService {
         }
     }
 
-    public void validateUpdate(Film film, Map<Long, Film> filmMap) {
-        validateNewData(validateFilmExisting(film.getId(), filmMap));
-    }
 }
