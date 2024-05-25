@@ -1,21 +1,24 @@
-package ru.yandex.practicum.filmorate.validation;
+package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Map;
 
 @Slf4j
+@Service
 public class ValidationServiceImpl implements ValidationService {
 
     public static final LocalDate FIRST_FILM_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
 
+    //USER VALIDATIONS
+
     @Override
-    public void validateCreate(User user) {
+    public void validateNewData(User user) {
         if (!user.getEmail().contains("@") || user.getEmail().isBlank()) {
             log.error("Неверный формат электронной почты");
             throw new ValidationException("Неверный формат электронной почты");
@@ -31,18 +34,10 @@ public class ValidationServiceImpl implements ValidationService {
         }
     }
 
-    @Override
-    public void validateUpdate(User user, Map<Long, User> userMap) {
-        if (userMap.get(user.getId()) == null) {
-            log.error("Переданный пользователь не найден");
-            throw new ValidationException("Пользователь не найден");
-        } else {
-            validateCreate(user);
-        }
-    }
+    //FILM VALIDATIONS
 
     @Override
-    public void validateCreate(Film film) {
+    public void validateNewData(Film film) {
         if (film.getName() == null || film.getName().isBlank()) {
             log.warn("Название фильма - пустое.");
             throw new ValidationException("Название фильма не должно быть пустым.");
@@ -63,12 +58,4 @@ public class ValidationServiceImpl implements ValidationService {
         }
     }
 
-    public void validateUpdate(Film film, Map<Long, Film> filmMap) {
-        if (filmMap.get(film.getId()) == null) {
-            log.error("Обновляемый фильм не найден");
-            throw new ValidationException("Фильм не найден");
-        } else {
-            validateCreate(film);
-        }
-    }
 }

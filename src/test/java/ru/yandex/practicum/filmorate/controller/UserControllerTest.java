@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validation.ValidationService;
-import ru.yandex.practicum.filmorate.validation.ValidationServiceImpl;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.ValidationService;
+import ru.yandex.practicum.filmorate.service.ValidationServiceImpl;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
@@ -14,7 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserControllerTest {
 
     private final ValidationService validationService = new ValidationServiceImpl();
-    private final UserController userController = new UserController(validationService);
+    private final UserService userService = new UserService(new InMemoryUserStorage(), validationService);
+
+    private final UserController userController = new UserController(userService);
     User user1;
     User user2;
     User user3;
@@ -45,32 +49,32 @@ class UserControllerTest {
 
     @Test
     void shouldValidateUser() {
-        assertDoesNotThrow(() -> validationService.validateCreate(user1));
+        assertDoesNotThrow(() -> validationService.validateNewData(user1));
     }
 
     @Test
     void shouldNotValidateBadEmail() {
         user1.setEmail("1ya.ru");
-        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateNewData(user1));
         user1.setEmail(" ");
-        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateNewData(user1));
     }
 
     @Test
     void shouldNotValidateEmptyLogin() {
         user1.setLogin(" ");
-        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateNewData(user1));
     }
 
     @Test
     void shouldNotValidateBirthdayDate() {
         user1.setBirthday(LocalDate.of(2932, 1, 15));
-        assertThrows(ValidationException.class, () -> validationService.validateCreate(user1));
+        assertThrows(ValidationException.class, () -> validationService.validateNewData(user1));
     }
 
     @Test
     void shouldSetNameAsLogin() {
-        assertDoesNotThrow(() -> validationService.validateCreate(user3));
+        assertDoesNotThrow(() -> validationService.validateNewData(user3));
         assertEquals(user3.getName(), user3.getLogin());
     }
 
