@@ -28,8 +28,6 @@ public class JdbcFilmRepository implements FilmRepository {
         String sql = "SELECT * FROM films AS f " +
                 "LEFT OUTER JOIN film_MPA_rating AS fm ON fm.film_id = f.film_id " +
                 "LEFT OUTER JOIN MPA_rating AS mr ON fm.mpa_rating_id = mr.mpa_rating_id " +
-                //"LEFT OUTER JOIN film_genre as fg ON fg.film_id = f.film_id " +
-                //"LEFT OUTER JOIN genres as g ON g.genre_id = fg.genre_id " +
                 "WHERE f.film_id = :filmId";
         try {
             Film film = jdbs.queryForObject(sql, Map.of("filmId", filmId), new FilmRowMapper());
@@ -184,7 +182,7 @@ public class JdbcFilmRepository implements FilmRepository {
 
             GeneratedKeyHolder keyHolderGenres = new GeneratedKeyHolder();
 
-            List<Genre> genres = film.getGenres().stream().toList();
+            final List<Genre> genres = new ArrayList<>(film.getGenres());
             SqlParameterSource[] paramsGenres = new MapSqlParameterSource[genres.size()];
             for (int i = 0; i < genres.size(); i++) {
                 paramsGenres[i] = new MapSqlParameterSource()

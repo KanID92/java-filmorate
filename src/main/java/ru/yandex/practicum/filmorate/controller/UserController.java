@@ -37,6 +37,7 @@ public class UserController {
     public Collection<User> getFriends(@PathVariable long id) {
         log.info("==> GET /users/" + id + "/friends");
         Collection<User> userFriends = userService.getFriendsById(id);
+        System.out.println(userFriends);
         log.info("<== GET /users/" + id + "/friends" + " Количество друзей: " + userFriends.size());
         return userFriends;
     }
@@ -71,12 +72,16 @@ public class UserController {
 
     @PutMapping("/users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("==> PUT /users/" + id + "/friends/" + friendId);
         userService.addFriend(id, friendId);
+        log.info("Добавлена запись дружбы пользователя с id=" + id + " с пользователем с id=" + friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("==> DELETE /users/" + id + "/friends/" + friendId);
         userService.deleteFriend(id, friendId);
+        log.info("Удалена запись дружбы пользователя с id=" + id + " с пользователем с id=" + friendId);
     }
 
 

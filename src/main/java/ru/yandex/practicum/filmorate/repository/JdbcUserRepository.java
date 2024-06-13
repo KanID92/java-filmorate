@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -17,11 +16,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class JdbcUserRepository implements UserRepository {
 
-    private static final Logger log = LoggerFactory.getLogger(JdbcUserRepository.class);
+
     private final NamedParameterJdbcOperations jdbc;
     private final FriendRepository friendsRepository;
 
@@ -31,12 +31,16 @@ public class JdbcUserRepository implements UserRepository {
                 "LEFT JOIN FRIENDS ON USERS.USER_ID = FRIENDS.USER_ID " +
                 "WHERE USERS.USER_ID = :userId";
         User user = jdbc.query(sql1, Map.of("userId", userId), new UserExtractor());
+        System.out.println("Возврат репозитория: " + user);
         return Optional.ofNullable(user);
     }
 
     @Override
     public Collection<User> getFriendsByID(Long userId) {
-        final String sql = "SELECT * FROM USERS WHERE USER_ID = (SELECT FRIEND_ID FROM FRIENDS WHERE USER_ID = :userId)";
+        final String sql1 = "SELECT * FROM USERS, FRIENDS WHERE USERS.USER_ID = :userId " +
+                "AND FRIENDS.USER_ID = :userId";
+        final String sql = "SELECT * FROM USERS WHERE USER_ID = " +
+                "(SELECT FRIEND_ID FROM FRIENDS WHERE USER_ID = :userId)";
         return jdbc.query(sql, Map.of("userId", userId), new UserRowMapper());
     }
 

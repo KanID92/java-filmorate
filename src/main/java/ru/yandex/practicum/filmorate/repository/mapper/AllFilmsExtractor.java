@@ -35,5 +35,3 @@ public class AllFilmsExtractor implements ResultSetExtractor<List<Film>> {
     }
 }
 
-//                films.get(filmId).getGenres().add(
-//                        new Genre(rs.getInt("genre_id"), rs.getString("genre_name")));

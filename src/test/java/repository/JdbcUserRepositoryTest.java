@@ -24,10 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-//@SpringBootTest(classes = JdbcUserRepository.class)
-//@JdbcTest
-//@Import({JdbcUserRepository.class, JdbcFriendRepository.class})
-//@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class JdbcUserRepositoryTest {
 
     private final JdbcUserRepository userRepository;
