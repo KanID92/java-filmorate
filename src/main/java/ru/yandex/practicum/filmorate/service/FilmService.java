@@ -1,56 +1,36 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MPARating;
 
 import java.util.Collection;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class FilmService {
+public interface FilmService {
 
-    private final FilmStorage filmStorage;
-    private final UserService userService;
-    private final ValidationService validationService;
+    Film getById(long filmId);
 
-    public Film getById(long filmId) {
-        return filmStorage.getById(filmId);
-    }
+    Film save(Film film);
 
-    public Film save(Film film) {
-        validationService.validateNewData(film);
-        return filmStorage.save(film);
-    }
+    Film update(Film film);
 
-    public Film update(Film film) {
-        validationService.validateNewData(film);
-        return filmStorage.update(film);
-    }
+    void addLike(long filmId, long userId);
 
-    public void addLike(long filmId, long userId) {
-        Film film = filmStorage.getById(filmId);
-        userService.getById(userId);
-        film.getUsersLikes().add(userId);
-    }
+    void deleteLike(long filmId, long userId);
 
-    public void deleteLike(long filmId, long userId) {
-        Film film = filmStorage.getById(filmId);
-        userService.getById(userId);
-        film.getUsersLikes().remove(userId);
-    }
+    Collection<Film> getAll();
 
-    public Collection<Film> getAll() {
-        return filmStorage.getAll();
-    }
+    Collection<Genre> getAllGenres();
 
-    public Collection<Film> getMostLikedFilms(long limit) {
-        return List.copyOf(filmStorage.getAll())
-                .stream()
-                .sorted((f1, f2) -> f2.getUsersLikes().size() - f1.getUsersLikes().size())
-                .limit(limit)
-                .toList();
-    }
+    List<Genre> getAllFilmGenres(long filmId);
+
+    MPARating getMPARatingById(Long filmId);
+
+    Collection<MPARating> getAllMPARatings();
+
+    Collection<Film> getMostLikedFilms(long limit);
+
+    Genre getGenreById(Integer genreId);
+
 }
