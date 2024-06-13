@@ -1,0 +1,17 @@
+services:
+  server:
+    enviroment:
+      - SPRING_DATASOURCE_PASSWORD=filmorate
+      - TZ=EUROPE/MOSCOW
+
+
+db:
+  image: postgres:16
+  container_name: filmorate-db
+  ports:
+    - "6433:5432"
+  environment:
+    - POSTGRES_PASSWORD=filmorate
+    - POSTGRES_USER=filmorate
+    - POSTGRES_DB=filmorate
+    - TZ=EUROPE/Moscow

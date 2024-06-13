@@ -36,7 +36,7 @@ public class UserController {
     @GetMapping("/users/{id}/friends")
     public Collection<User> getFriends(@PathVariable long id) {
         log.info("==> GET /users/" + id + "/friends");
-        Collection<User> userFriends = userService.getFriends(id);
+        Collection<User> userFriends = userService.getFriendsById(id);
         log.info("<== GET /users/" + id + "/friends" + " Количество друзей: " + userFriends.size());
         return userFriends;
     }
@@ -46,14 +46,14 @@ public class UserController {
         log.info("==> GET /users/" + id + "/friends/common/" + otherId);
         Collection<User> usersCommonFriends = userService.getCommonFriends(id, otherId);
         log.info("<== GET /users/" + id + "/friends/common/" + otherId +
-                "Количество общих друзей: " + usersCommonFriends.size());
+                " Количество общих друзей: " + usersCommonFriends.size());
         return usersCommonFriends;
     }
 
     @PostMapping("/users")
     public User save(@RequestBody User user) {
         log.info("==> POST /users " + user);
-        User newUser = userService.save(user);
+        User newUser = userService.create(user);
         log.info("<== POST /users " + newUser);
         return newUser;
     }

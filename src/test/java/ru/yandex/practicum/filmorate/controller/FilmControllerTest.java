@@ -1,29 +1,26 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.BaseFilmService;
 import ru.yandex.practicum.filmorate.service.ValidationService;
-import ru.yandex.practicum.filmorate.service.ValidationServiceImpl;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@RequiredArgsConstructor
 class FilmControllerTest {
 
-    ValidationService validationService = new ValidationServiceImpl();
-    FilmService filmService = new FilmService(new InMemoryFilmStorage(),
-            new UserService(new InMemoryUserStorage(), validationService), validationService);
+    ValidationService validationService;
+    BaseFilmService baseFilmService;
 
 
-    FilmController filmController = new FilmController(filmService);
+    FilmController filmController;
     Film film1;
     Film film2;
     Film film3;
