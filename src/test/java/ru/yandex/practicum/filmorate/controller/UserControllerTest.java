@@ -1,24 +1,24 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.BaseUserService;
 import ru.yandex.practicum.filmorate.service.ValidationService;
-import ru.yandex.practicum.filmorate.service.ValidationServiceImpl;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@RequiredArgsConstructor
 class UserControllerTest {
 
-    private final ValidationService validationService = new ValidationServiceImpl();
-    private final UserService userService = new UserService(new InMemoryUserStorage(), validationService);
+    private final ValidationService validationService;
+    private final BaseUserService baseUserService;
 
-    private final UserController userController = new UserController(userService);
+    private final UserController userController;
     User user1;
     User user2;
     User user3;
