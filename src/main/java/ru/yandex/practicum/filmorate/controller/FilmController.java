@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MPARating;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
@@ -14,6 +16,8 @@ import java.util.Collection;
 public class FilmController {
 
     private final FilmService filmService;
+
+    //========================/GET/==============================//
 
     @GetMapping("/films/{id}")
     public Film get(@PathVariable long id) {
@@ -41,6 +45,43 @@ public class FilmController {
         return mostLikedFilms;
     }
 
+    @GetMapping("/genres")
+    public Collection<Genre> getAllGenres() {
+        log.info("==> GET /genres");
+        Collection<Genre> allGenres = filmService.getAllGenres();
+        log.info("<== GET /genres"
+                + "Список жанров в количестве: " + allGenres.size());
+        return allGenres;
+    }
+
+    @GetMapping("/genres/{id}")
+    public Genre getGenre(@PathVariable int id) {
+        log.info("==> GET /genres/" + id);
+        Genre genre = filmService.getGenreById(id);
+        log.info("<== GET /genres/" + id + "  Жанр фильма: " + genre.getName());
+        return genre;
+    }
+
+    @GetMapping("/mpa")
+    public Collection<MPARating> getAllMpaRating() {
+        log.info("==> GET /mpa");
+        Collection<MPARating> mpaRating = filmService.getAllMPARatings();
+        log.info("<== GET /mpa"
+                + "Список рейтингов MPA в количестве: " + mpaRating.size());
+        return mpaRating;
+    }
+
+    @GetMapping("/mpa/{id}")
+    public MPARating getMpaRatingById(@PathVariable long id) {
+        log.info("==> GET /mpa/" + id);
+        MPARating mpaRating = filmService.getMPARatingById(id);
+        log.info("<== GET /mpa/" + id
+                + " Рейтинг c id = " + id + " : " + mpaRating.getName());
+        return mpaRating;
+    }
+
+    //========================/POST/==============================//
+
     @PostMapping("/films")
     public Film save(@RequestBody Film film) {
         log.info("==> POST /films " + film);
@@ -48,6 +89,8 @@ public class FilmController {
         log.info("<== POST /films" + newFilm);
         return newFilm;
     }
+
+    //=========================/PUT/==============================//
 
     @PutMapping("/films")
     public Film update(@RequestBody Film film) {
@@ -61,9 +104,11 @@ public class FilmController {
     public void addLike(@PathVariable long id, @PathVariable long userId) {
         log.info("==> PUT /films/" + id + "/like/" + userId);
         filmService.addLike(id, userId);
-        log.info("<== PUT /films/" + id + "/like/" + userId + "  Лайк фильму " + filmService.getById(id)
+        log.info("<== PUT /films/" + id + "/like/" + userId + "  Лайк фильму " + filmService.getById(id).getName()
                 + " от пользователя с ID=" + userId + " поставлен");
     }
+
+    //========================/DELETE/==============================//
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public void deleteLike(@PathVariable long id, @PathVariable long userId) {
