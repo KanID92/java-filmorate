@@ -187,8 +187,8 @@ public class JdbcFilmRepository implements FilmRepository {
             List<Genre> genres = film.getGenres().stream().toList();
             SqlParameterSource[] paramsGenres = new MapSqlParameterSource[genres.size()];
             for (int i = 0; i < genres.size(); i++) {
-                paramsGenres[i] = new MapSqlParameterSource().
-                        addValue("filmId", film.getId())
+                paramsGenres[i] = new MapSqlParameterSource()
+                        .addValue("filmId", film.getId())
                         .addValue("genreId", genres.get(i).getId());
             }
 
