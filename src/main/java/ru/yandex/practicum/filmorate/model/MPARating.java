@@ -1,23 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 
 @Data
 @EqualsAndHashCode(of = "id")
+@NoArgsConstructor
+@AllArgsConstructor
 public class MPARating {
 
     private int id;
     private String name;
-
-    public MPARating() {
-
-    }
-
-    public MPARating(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 
 }

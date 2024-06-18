@@ -102,11 +102,13 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Collection<User> getCommonFriends(long userId1, long userId2) {
-        final String sql = "SELECT * from USERS AS u WHERE USER_ID IN " +
+        final String sql = "SELECT * FROM USERS u, FRIENDS f, FRIENDS o "
+                + "WHERE u.USER_ID = f.FRIEND_ID AND u.USER_ID = o.FRIEND_ID AND f.USER_ID = :userId AND o.USER_ID = :userId";
+        final String sql1 = "SELECT * from USERS AS u WHERE USER_ID IN " +
                 "(SELECT FRIEND_ID FROM USERS AS u JOIN FRIENDS AS f ON u.USER_ID = f.USER_ID WHERE u.USER_ID = :userId1)" +
                 "AND USER_ID IN " +
                 "(SELECT FRIEND_ID FROM USERS AS u JOIN FRIENDS AS f ON u.USER_ID = f.USER_ID WHERE u.USER_ID = :userId2)";
-        return jdbc.query(sql, Map.of("userId1", userId1, "userId2", userId2), new UserRowMapper());
+        return jdbc.query(sql1, Map.of("userId1", userId1, "userId2", userId2), new UserRowMapper());
     }
 
 }
