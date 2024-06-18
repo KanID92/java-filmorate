@@ -36,7 +36,8 @@ public class UserController {
     @GetMapping("/users/{id}/friends")
     public Collection<User> getFriends(@PathVariable long id) {
         log.info("==> GET /users/" + id + "/friends");
-        Collection<User> userFriends = userService.getFriends(id);
+        Collection<User> userFriends = userService.getFriendsById(id);
+        System.out.println(userFriends);
         log.info("<== GET /users/" + id + "/friends" + " Количество друзей: " + userFriends.size());
         return userFriends;
     }
@@ -46,14 +47,14 @@ public class UserController {
         log.info("==> GET /users/" + id + "/friends/common/" + otherId);
         Collection<User> usersCommonFriends = userService.getCommonFriends(id, otherId);
         log.info("<== GET /users/" + id + "/friends/common/" + otherId +
-                "Количество общих друзей: " + usersCommonFriends.size());
+                " Количество общих друзей: " + usersCommonFriends.size());
         return usersCommonFriends;
     }
 
     @PostMapping("/users")
     public User save(@RequestBody User user) {
         log.info("==> POST /users " + user);
-        User newUser = userService.save(user);
+        User newUser = userService.create(user);
         log.info("<== POST /users " + newUser);
         return newUser;
     }
@@ -71,12 +72,16 @@ public class UserController {
 
     @PutMapping("/users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("==> PUT /users/" + id + "/friends/" + friendId);
         userService.addFriend(id, friendId);
+        log.info("Добавлена запись дружбы пользователя с id=" + id + " с пользователем с id=" + friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable long id, @PathVariable long friendId) {
+        log.info("==> DELETE /users/" + id + "/friends/" + friendId);
         userService.deleteFriend(id, friendId);
+        log.info("Удалена запись дружбы пользователя с id=" + id + " с пользователем с id=" + friendId);
     }
 
 
