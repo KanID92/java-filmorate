@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 
 import java.util.Collection;
 
@@ -72,7 +72,7 @@ public class FilmController {
     }
 
     @GetMapping("/mpa/{id}")
-    public MPARating getMpaRatingById(@PathVariable long id) {
+    public MPARating getMpaRatingById(@PathVariable int id) {
         log.info("==> GET /mpa/" + id);
         MPARating mpaRating = filmService.getMPARatingById(id);
         log.info("<== GET /mpa/" + id

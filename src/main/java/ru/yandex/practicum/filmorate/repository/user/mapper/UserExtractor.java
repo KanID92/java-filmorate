@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.repository.mapper;
+package ru.yandex.practicum.filmorate.repository.user.mapper;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;

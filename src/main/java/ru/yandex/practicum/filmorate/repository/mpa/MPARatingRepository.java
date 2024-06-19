@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.repository;
+package ru.yandex.practicum.filmorate.repository.mpa;
 
 import ru.yandex.practicum.filmorate.model.MPARating;
 
@@ -8,6 +8,6 @@ public interface MPARatingRepository {
 
     Collection<MPARating> getAllMPARatings();
 
-    MPARating getMPARatingById(Long mpaId);
+    MPARating getMPARatingById(int mpaId);
 
 }

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -25,7 +25,7 @@ public interface FilmService {
 
     List<Genre> getAllFilmGenres(long filmId);
 
-    MPARating getMPARatingById(Long filmId);
+    MPARating getMPARatingById(int filmId);
 
     Collection<MPARating> getAllMPARatings();
 

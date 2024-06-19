@@ -11,10 +11,10 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
-import ru.yandex.practicum.filmorate.repository.JdbcFilmRepository;
-import ru.yandex.practicum.filmorate.repository.JdbcGenreRepository;
-import ru.yandex.practicum.filmorate.repository.JdbcLikeRepository;
-import ru.yandex.practicum.filmorate.service.BaseFilmService;
+import ru.yandex.practicum.filmorate.repository.film.JdbcFilmRepository;
+import ru.yandex.practicum.filmorate.repository.genre.JdbcGenreRepository;
+import ru.yandex.practicum.filmorate.repository.like.JdbcLikeRepository;
+import ru.yandex.practicum.filmorate.service.film.BaseFilmService;
 
 import java.time.LocalDate;
 import java.util.Collection;

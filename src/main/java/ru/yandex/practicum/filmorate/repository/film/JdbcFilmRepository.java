@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.repository;
+package ru.yandex.practicum.filmorate.repository.film;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.repository.mapper.AllFilmsExtractor;
-import ru.yandex.practicum.filmorate.repository.mapper.FilmRowMapper;
-import ru.yandex.practicum.filmorate.repository.mapper.GenreRowMapper;
+import ru.yandex.practicum.filmorate.repository.film.mapper.AllFilmsExtractor;
+import ru.yandex.practicum.filmorate.repository.film.mapper.FilmRowMapper;
+import ru.yandex.practicum.filmorate.repository.genre.mapper.GenreRowMapper;
 
 import java.sql.Date;
 import java.util.*;
@@ -23,11 +23,11 @@ public class JdbcFilmRepository implements FilmRepository {
 
     private final NamedParameterJdbcOperations jdbs;
 
+
     @Override
     public Optional<Film> getById(long filmId) {
         String sql = "SELECT * FROM films AS f " +
-                "LEFT OUTER JOIN film_MPA_rating AS fm ON fm.film_id = f.film_id " +
-                "LEFT OUTER JOIN MPA_rating AS mr ON fm.mpa_rating_id = mr.mpa_rating_id " +
+                "LEFT OUTER JOIN MPA_rating AS mr ON f.mpa_rating_id = mr.mpa_rating_id " +
                 "WHERE f.film_id = :filmId";
         try {
             Film film = jdbs.queryForObject(sql, Map.of("filmId", filmId), new FilmRowMapper());
@@ -42,24 +42,28 @@ public class JdbcFilmRepository implements FilmRepository {
     public Film save(Film film) {
         GeneratedKeyHolder keyHolderFilms = new GeneratedKeyHolder();
 
+
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("name", film.getName())
                 .addValue("description", film.getDescription())
                 .addValue("release_date", Date.valueOf(film.getReleaseDate()))
-                .addValue("duration_in_sec", film.getDuration());
+                .addValue("duration_in_sec", film.getDuration())
+                .addValue("mpa_rating_id", film.getMpa().getId());
+
 
         jdbs.update("INSERT INTO FILMS (" +
-                        "NAME, DESCRIPTION, RELEASE_DATE, DURATION_IN_MIN) " +
-                        "VALUES (:name, :description, :release_date, :duration_in_sec)",
+                        "NAME, DESCRIPTION, RELEASE_DATE, DURATION_IN_MIN, MPA_RATING_ID) " +
+                        "VALUES (:name, :description, :release_date, :duration_in_sec, :mpa_rating_id)",
                 params, keyHolderFilms, new String[]{"film_id"});
 
-        film.setId(keyHolderFilms.getKeyAs(Long.class));
 
-        createFilmMpaBond(film);
+        film.setId(keyHolderFilms.getKeyAs(Long.class));
 
         createFilmGenresBond(film);
 
         return getById(film.getId()).orElseThrow();
+
+
     }
 
     @Override
@@ -71,7 +75,8 @@ public class JdbcFilmRepository implements FilmRepository {
                     "NAME = :name, " +
                     "DESCRIPTION = :description, " +
                     "RELEASE_DATE = :releaseDate, " +
-                    "DURATION_IN_MIN = :duration " +
+                    "DURATION_IN_MIN = :duration, " +
+                    "MPA_RATING_ID = :mpa_rating_id " +
                     "WHERE FILM_ID = :filmId";
 
             jdbs.update(sqlUpdateFilm, Map.of(
@@ -79,14 +84,13 @@ public class JdbcFilmRepository implements FilmRepository {
                     "name", film.getName(),
                     "description", film.getDescription(),
                     "releaseDate", film.getReleaseDate(),
-                    "duration", film.getDuration()));
+                    "duration", film.getDuration(),
+                    "mpa_rating_id", film.getMpa().getId()));
 
-            String sqlDeleteMpaBond = "DELETE FROM FILM_MPA_RATING WHERE FILM_ID = :filmId";
             String sqlDeleteGenresBond = "DELETE FROM FILM_GENRE WHERE FILM_ID = :filmId";
-            jdbs.update(sqlDeleteMpaBond, Map.of("filmId", film.getId()));
             jdbs.update(sqlDeleteGenresBond, Map.of("filmId", film.getId()));
 
-            createFilmMpaBond(film);
+            //createFilmMpaBond(film);
             createFilmGenresBond(film);
 
             return film;
@@ -103,9 +107,6 @@ public class JdbcFilmRepository implements FilmRepository {
         jdbs.update(sqlFilms, Map.of("filmId", filmId));
         String sqlFilmGenre = "DELETE FROM film_genre WHERE film_id = :filmId";
         jdbs.update(sqlFilmGenre, Map.of("filmId", filmId));
-        String sqlFilmMPARating = "DELETE FROM film_MPA_rating WHERE film_id = :filmId";
-        jdbs.update(sqlFilmMPARating, Map.of("filmId", filmId));
-
     }
 
     @Override
@@ -113,8 +114,7 @@ public class JdbcFilmRepository implements FilmRepository {
         String sql = "Select * FROM films AS f " +
                 "LEFT JOIN film_genre AS fg ON fg.film_id = f.film_id " +
                 "LEFT JOIN genres AS g ON g.genre_id = fg.genre_id " +
-                "LEFT JOIN film_MPA_rating AS fm ON fm.film_id = f.film_id " +
-                "LEFT JOIN MPA_rating AS mr ON mr.mpa_rating_id = fm.mpa_rating_id";
+                "LEFT JOIN MPA_rating AS mr ON f.mpa_rating_id = mr.mpa_rating_id";
         return jdbs.query(sql, new AllFilmsExtractor());
     }
 
@@ -122,11 +122,10 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public Collection<Film> getTopPopular(long countTop) {
 
-        String sqlTopFilms = "SELECT f.*, mr.mpa_rating_id, mr.name " +
+        String sqlTopFilms = "SELECT f.*, mr.name " +
                 "FROM FILMS AS f " +
                 "LEFT JOIN LIKES AS l ON f.film_id = l.film_id " +
-                "LEFT JOIN FILM_MPA_RATING AS fmr ON f.film_id = fmr.film_id " +
-                "LEFT JOIN MPA_RATING AS mr ON fmr.mpa_rating_id = mr.mpa_rating_id " +
+                "LEFT JOIN MPA_RATING AS mr ON f.mpa_rating_id = mr.mpa_rating_id " +
                 "GROUP BY f.film_id " +
                 "ORDER BY COUNT(l.film_id) DESC " +
                 "LIMIT :countTop";
@@ -143,21 +142,6 @@ public class JdbcFilmRepository implements FilmRepository {
 
     }
 
-
-    private void createFilmMpaBond(Film film) {
-        if (film.getMpa() != null) {
-            try {
-                String sql = "Select mpa_rating_id from mpa_rating where mpa_rating_id = :mpaRatingId";
-                jdbs.queryForObject(sql, Map.of("mpaRatingId", film.getMpa().getId()), Integer.class);
-            } catch (EmptyResultDataAccessException e) {
-                throw new EmptyResultDataAccessException(film.getMpa().getId());
-            }
-            jdbs.update("INSERT INTO FILM_MPA_RATING (FILM_ID, MPA_RATING_ID) " +
-                            "VALUES (:filmId, :mpaRatingId)",
-                    Map.of("filmId", film.getId(),
-                            "mpaRatingId", film.getMpa().getId()));
-        }
-    }
 
     @Override
     public LinkedHashSet<Genre> getGenres(long filmId) {

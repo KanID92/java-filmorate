@@ -1,15 +1,18 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
-import ru.yandex.practicum.filmorate.repository.FilmRepository;
-import ru.yandex.practicum.filmorate.repository.GenreRepository;
-import ru.yandex.practicum.filmorate.repository.LikeRepository;
-import ru.yandex.practicum.filmorate.repository.MPARatingRepository;
+import ru.yandex.practicum.filmorate.repository.film.FilmRepository;
+import ru.yandex.practicum.filmorate.repository.genre.GenreRepository;
+import ru.yandex.practicum.filmorate.repository.like.LikeRepository;
+import ru.yandex.practicum.filmorate.repository.mpa.MPARatingRepository;
+import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.service.validation.ValidationService;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +39,11 @@ public class BaseFilmService implements FilmService {
     @Override
     public Film save(Film film) {
         validationService.validateNewData(film);
+        try {
+            mpaRatingRepository.getMPARatingById(film.getMpa().getId());
+        } catch (NotFoundException e) {
+            throw new ValidationException("Рейтинг MPA с данным id - не найден");
+        }
         Film filmSaved = filmRepository.save(film);
         filmSaved.setGenres(filmRepository.getGenres(film.getId()));
         return filmSaved;
@@ -91,7 +99,7 @@ public class BaseFilmService implements FilmService {
     }
 
     @Override
-    public MPARating getMPARatingById(Long mpaId) {
+    public MPARating getMPARatingById(int mpaId) {
         return mpaRatingRepository.getMPARatingById(mpaId);
     }
 

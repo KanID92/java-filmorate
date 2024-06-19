@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.repository;
+package ru.yandex.practicum.filmorate.repository.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +9,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.repository.mapper.UserExtractor;
-import ru.yandex.practicum.filmorate.repository.mapper.UserRowMapper;
+import ru.yandex.practicum.filmorate.repository.friend.FriendRepository;
+import ru.yandex.practicum.filmorate.repository.user.mapper.UserExtractor;
+import ru.yandex.practicum.filmorate.repository.user.mapper.UserRowMapper;
 
 import java.util.Collection;
 import java.util.Map;

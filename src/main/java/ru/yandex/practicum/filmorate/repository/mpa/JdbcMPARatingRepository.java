@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.repository;
+package ru.yandex.practicum.filmorate.repository.mpa;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -30,7 +30,7 @@ public class JdbcMPARatingRepository implements MPARatingRepository {
     }
 
     @Override
-    public MPARating getMPARatingById(Long mpaId) {
+    public MPARating getMPARatingById(int mpaId) {
         try {
             String sql = "SELECT * FROM mpa_rating WHERE mpa_rating_id = :mpaId";
 
