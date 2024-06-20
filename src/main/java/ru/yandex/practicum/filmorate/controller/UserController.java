@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
 
 
@@ -22,7 +23,7 @@ public class UserController {
         log.info("==> GET /users ");
         Collection<User> allUsers = userService.getAll();
         log.info("<== GET /users Список пользователей размером: "
-                 + allUsers.size() + " возвращен");
+                + allUsers.size() + " возвращен");
         return allUsers;
     }
 
@@ -48,7 +49,7 @@ public class UserController {
         log.info("==> GET /users/" + id + "/friends/common/" + otherId);
         Collection<User> usersCommonFriends = userService.getCommonFriends(id, otherId);
         log.info("<== GET /users/" + id + "/friends/common/" + otherId +
-                 " Количество общих друзей: " + usersCommonFriends.size());
+                " Количество общих друзей: " + usersCommonFriends.size());
         return usersCommonFriends;
     }
 
@@ -94,7 +95,6 @@ public class UserController {
     public List<Long> findAllFilmLikes(@PathVariable("id") long userId) {
         return userService.findAllFilmLikes(userId);
     }
-
     @DeleteMapping("/users/{userId}")
     public void deleteUser(@PathVariable long userId) {
         log.info("==> DELETE /users/" + userId);
