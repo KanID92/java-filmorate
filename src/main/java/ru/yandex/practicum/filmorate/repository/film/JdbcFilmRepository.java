@@ -103,10 +103,8 @@ public class JdbcFilmRepository implements FilmRepository {
 
     @Override
     public void deleteById(long filmId) {
-        String sqlFilms = "DELETE FROM films WHERE film_id = :filmId";
-        jdbs.update(sqlFilms, Map.of("filmId", filmId));
-        String sqlFilmGenre = "DELETE FROM film_genre WHERE film_id = :filmId";
-        jdbs.update(sqlFilmGenre, Map.of("filmId", filmId));
+        String query = "DELETE FROM FILMS WHERE FILM_ID = :filmId";
+        jdbs.update(query, Map.of("filmId", filmId));
     }
 
     @Override

@@ -118,7 +118,12 @@ public class FilmController {
                 + " от пользователя с ID=" + userId + " удален");
     }
 
-
+    @DeleteMapping("/films/{filmId}")
+    public void deleteFilm(@PathVariable long filmId) {
+        log.info("==> DELETE /films/" + filmId);
+        filmService.deleteFilm(filmId);
+        log.info("<== DELETE /films/" + filmId + " Фильм " + filmId + " удален");
+    }
 }
 
 
