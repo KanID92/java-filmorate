@@ -1,17 +1,25 @@
 package ru.yandex.practicum.filmorate.service.user;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.repository.film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.friend.FriendRepository;
+import ru.yandex.practicum.filmorate.repository.like.LikeRepository;
 import ru.yandex.practicum.filmorate.repository.user.UserRepository;
 import ru.yandex.practicum.filmorate.service.validation.ValidationService;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BaseUserService implements UserService {
 
     private final UserRepository userRepository;
@@ -19,6 +27,7 @@ public class BaseUserService implements UserService {
     private final ValidationService validationService;
 
     private final FriendRepository friendRepository;
+    private final FilmRepository filmRepository;
 
     @Override
     public User getById(long userId) {
@@ -101,7 +110,43 @@ public class BaseUserService implements UserService {
 
     }
 
+    @Override
+    public List<Film> recommendFilms(long userId) {
+        User user = userRepository.getById(userId).orElseThrow(
+                () -> new NotFoundException("Пользователь с данным id=" + userId + " не найден")
+        );
+        Set<Long> likes = userRepository.getAllLikes(userId);
 
+        List<User> allUsers = (List<User>) userRepository.getAll();
+        List<User> usersMaxIntersections = new ArrayList<>();
+        for (User u : allUsers) {
+            if (user.equals(u))
+                continue;
+            Set<Long> uLikes = userRepository.getAllLikes(u.getId());
+            for (long like : uLikes) {
+                if (likes.contains(like)) {
+                    usersMaxIntersections.add(u);
+                    break;
+                }
+            }
+        }
+
+        List<Film> recommended = new ArrayList<>();
+        for (User u : usersMaxIntersections) {
+            Set<Long> userLikes = userRepository.getAllLikes(u.getId());
+            for (long like : userLikes) {
+                if (!likes.contains(like)) {
+                    recommended.add(filmRepository.getById(like).orElseThrow(() -> new NotFoundException("film with id " + like + " not found")));
+                }
+            }
+        }
+
+        return recommended;
+    }
+
+    public List<Long> findAllFilmLikes(long userId) {
+        return userRepository.getAllLikes(userId).stream().toList();
+    }
 }
 
 
