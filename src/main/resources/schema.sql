@@ -74,9 +74,9 @@ CREATE TABLE IF NOT EXISTS reviews
     constraint reviews_pk
         primary key (review_id),
     constraint reviews_FILMS_FILM_ID_fk
-        foreign key (film_id) references FILMS,
+        foreign key (film_id) references FILMS ON DELETE CASCADE,
     constraint reviews_USERS_USER_ID_fk
-        foreign key (user_id) references USERS
+        foreign key (user_id) references USERS ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS reviews_likes
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS reviews_likes
     constraint reviews_likes_REVIEWS_REVIEW_ID_fk
         foreign key (review_id) references REVIEWS ON DELETE CASCADE,
     constraint reviews_likes_USERS_USER_ID_fk
-        foreign key (user_id) references USERS
+        foreign key (user_id) references USERS ON DELETE CASCADE
 );
 
 ALTER TABLE
