@@ -33,4 +33,5 @@ public interface FilmService {
 
     Genre getGenreById(Integer genreId);
 
+    void deleteFilm(long filmId);
 }

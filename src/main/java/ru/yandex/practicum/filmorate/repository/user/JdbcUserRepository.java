@@ -65,9 +65,8 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public void deleteById(Long userId) {
-        final String sql1 = "DELETE FROM USERS WHERE user_id = :userId";
-        jdbc.update(sql1,
-                Map.of("userId", userId));
+        final String query = "DELETE FROM USERS WHERE USER_ID = :userId";
+        jdbc.update(query, Map.of("userId", userId));
     }
 
     @Override

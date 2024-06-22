@@ -22,5 +22,4 @@ public interface FilmRepository {
     Collection<Film> getTopPopular(long count);
 
     LinkedHashSet<Genre> getGenres(long filmId);
-
 }

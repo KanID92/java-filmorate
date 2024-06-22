@@ -94,6 +94,11 @@ public class BaseFilmService implements FilmService {
     }
 
     @Override
+    public void deleteFilm(long filmId) {
+        filmRepository.deleteById(filmId);
+    }
+
+    @Override
     public Collection<MPARating> getAllMPARatings() {
         return mpaRatingRepository.getAllMPARatings();
     }
