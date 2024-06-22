@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.repository.film;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -8,10 +10,12 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.repository.film.mapper.AllFilmsExtractor;
 import ru.yandex.practicum.filmorate.repository.film.mapper.FilmRowMapper;
+import ru.yandex.practicum.filmorate.repository.film.mapper.FilmsExtractor;
 import ru.yandex.practicum.filmorate.repository.genre.mapper.GenreRowMapper;
 
 import java.sql.Date;
@@ -21,6 +25,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class JdbcFilmRepository implements FilmRepository {
 
+    private static final Logger log = LoggerFactory.getLogger(JdbcFilmRepository.class);
     private final NamedParameterJdbcOperations jdbs;
 
 
@@ -33,7 +38,7 @@ public class JdbcFilmRepository implements FilmRepository {
             Film film = jdbs.queryForObject(sql, Map.of("filmId", filmId), new FilmRowMapper());
             return Optional.ofNullable(film);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Film with id " + filmId + " not found");
+            throw new NotFoundException("Фильм с id " + filmId + " не найден");
         }
 
     }
@@ -60,6 +65,7 @@ public class JdbcFilmRepository implements FilmRepository {
         film.setId(keyHolderFilms.getKeyAs(Long.class));
 
         createFilmGenresBond(film);
+        createFilmDirectorsBond(film);
 
         return getById(film.getId()).orElseThrow();
 
@@ -90,12 +96,12 @@ public class JdbcFilmRepository implements FilmRepository {
             String sqlDeleteGenresBond = "DELETE FROM FILM_GENRE WHERE FILM_ID = :filmId";
             jdbs.update(sqlDeleteGenresBond, Map.of("filmId", film.getId()));
 
-            //createFilmMpaBond(film);
             createFilmGenresBond(film);
 
             return film;
 
         } else {
+            log.warn("Фильм для обновления с id {} не найден", film.getId());
             throw new NotFoundException("Фильм для обновления с id " + film.getId() + " не найден");
         }
 
@@ -113,7 +119,8 @@ public class JdbcFilmRepository implements FilmRepository {
                 "LEFT JOIN film_genre AS fg ON fg.film_id = f.film_id " +
                 "LEFT JOIN genres AS g ON g.genre_id = fg.genre_id " +
                 "LEFT JOIN MPA_rating AS mr ON f.mpa_rating_id = mr.mpa_rating_id";
-        return jdbs.query(sql, new AllFilmsExtractor());
+
+        return setGenresAndDirectors(jdbs.query(sql, new FilmsExtractor()));
     }
 
 
@@ -129,15 +136,55 @@ public class JdbcFilmRepository implements FilmRepository {
                 "LIMIT :countTop";
 
         Collection<Film> topFilms = jdbs.query(sqlTopFilms, Map.of("countTop", countTop),
-                new AllFilmsExtractor());
-        System.out.println(topFilms);
-        List<Long> topFilmsIds = Objects.requireNonNull(topFilms).stream().map(Film::getId).toList();
-        Map<Long, LinkedHashSet<Genre>> genres = getGenresForFilms(topFilmsIds);
+                new FilmsExtractor());
 
-        topFilms.forEach(film -> film.setGenres(genres.getOrDefault(film.getId(), new LinkedHashSet<>())));
+        return setGenresAndDirectors(topFilms);
 
-        return topFilms;
+    }
 
+    @Override
+    public Collection<Film> getSortedFilmsByDirector(long directorId, String sortBy) {
+
+        String queryYear = "SELECT f.*, d.DIRECTOR_ID, mr.NAME " +
+                "FROM FILM_DIRECTOR AS fd " +
+                "LEFT JOIN FILMS AS f ON fd.FILM_ID = f.FILM_ID " +
+                "LEFT JOIN MPA_RATING AS mr ON f.MPA_RATING_ID = mr.MPA_RATING_ID " +
+                "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                "WHERE fd.DIRECTOR_ID = :directorId " +
+                "ORDER BY year(f.RELEASE_DATE)";
+
+        String queryLikes = "SELECT f.*, " +
+                "d.DIRECTOR_ID, " +
+                "mr.NAME, " +
+                "(SELECT count(*) FROM LIKES AS l WHERE fd.FILM_ID = l.FILM_ID) AS LIKESC " +
+                "FROM FILM_DIRECTOR AS fd " +
+                "LEFT JOIN FILMS AS f ON fd.FILM_ID = f.FILM_ID " +
+                "LEFT JOIN MPA_RATING AS mr ON f.MPA_RATING_ID = mr.MPA_RATING_ID " +
+                "LEFT JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                "WHERE fd.DIRECTOR_ID = :directorId " +
+                "ORDER BY LIKESC DESC ";
+
+
+        log.info("Films sorted by " + sortBy);
+        switch (sortBy) {
+            case "year":
+                log.info("Вариант сортировки по году:  " + sortBy);
+                Collection<Film> directorFilmsByYear = jdbs.query(queryYear, Map.of("directorId", directorId), new FilmsExtractor());
+                log.info("Из DB получен список размером:  " + directorFilmsByYear.size());
+
+                return setGenresAndDirectors(directorFilmsByYear);
+
+            case "likes":
+                log.info("Вариант сортировки по лайкам:  " + sortBy);
+                Collection<Film> directorFilmsByLikes = jdbs.query(queryLikes, Map.of("directorId", directorId), new FilmsExtractor());
+                log.info("Из DB получен список размером:  " + directorFilmsByLikes.size());
+
+                return setGenresAndDirectors(directorFilmsByLikes);
+
+            default:
+                log.info("вариант сортировки дефотл:  " + sortBy);
+                throw new ValidationException("Неверный параметр запроса: " + sortBy);
+        }
     }
 
 
@@ -178,6 +225,42 @@ public class JdbcFilmRepository implements FilmRepository {
         }
     }
 
+
+    private void createFilmDirectorsBond(Film film) {
+        if (film.getDirectors() != null) {
+            String sql = "Select director_id from directors";
+            List<Long> directorsFromDb = jdbs.queryForList(sql, new HashMap<>(), Long.class);
+            for (Director director : film.getDirectors()) {
+                if (!directorsFromDb.contains(director.getId())) {
+                    throw new EmptyResultDataAccessException((int) director.getId());
+                }
+            }
+
+            final List<Director> directors = new ArrayList<>(film.getDirectors());
+            SqlParameterSource[] paramsDirectors = new MapSqlParameterSource[directors.size()];
+            for (int i = 0; i < directors.size(); i++) {
+                paramsDirectors[i] = new MapSqlParameterSource()
+                        .addValue("filmId", film.getId())
+                        .addValue("directorId", directors.get(i).getId());
+            }
+            jdbs.batchUpdate("INSERT INTO FILM_DIRECTOR (FILM_ID, DIRECTOR_ID) " +
+                            "VALUES (:filmId, :directorId)",
+                    paramsDirectors);
+        }
+    }
+
+
+    private Collection<Film> setGenresAndDirectors(Collection<Film> films) {
+        List<Long> filmsIds = films.stream().map(Film::getId).toList();
+        Map<Long, LinkedHashSet<Genre>> genres = getGenresForFilms(filmsIds);
+        Map<Long, LinkedHashSet<Director>> directors = getDirectorsForFilms(filmsIds);
+        for (Film film : films) {
+            film.setGenres(genres.getOrDefault(film.getId(), new LinkedHashSet<>()));
+            film.setDirectors(directors.getOrDefault(film.getId(), new LinkedHashSet<>()));
+        }
+        return films;
+    }
+
     private Map<Long, LinkedHashSet<Genre>> getGenresForFilms(List<Long> filmIds) {
         String sql = "SELECT fg.FILM_ID, g.Genre_ID, g.GENRE_NAME " +
                 "FROM FILM_GENRE AS fg " +
@@ -199,6 +282,31 @@ public class JdbcFilmRepository implements FilmRepository {
 
         return genresMap;
     }
+
+    private Map<Long, LinkedHashSet<Director>> getDirectorsForFilms(List<Long> filmIds) {
+        String sqlDirectors = "SELECT fd.FILM_ID, d.DIRECTOR_ID, d.NAME " +
+                "FROM FILM_DIRECTOR AS fd " +
+                "JOIN DIRECTORS AS d ON fd.DIRECTOR_ID = d.DIRECTOR_ID " +
+                "WHERE fd.FILM_ID IN (:filmIds)";
+        if (filmIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<Map<String, Object>> rows = jdbs.queryForList(sqlDirectors, Map.of("filmIds", filmIds));
+        Map<Long, LinkedHashSet<Director>> directorsMap = new HashMap<>();
+
+        for (Map<String, Object> row : rows) {
+            Long filmId = (Long) row.get("FILM_ID");
+            Director director = new Director((Long) row.get("DIRECTOR_ID"), (String) row.get("NAME"));
+
+            directorsMap.computeIfAbsent(filmId, k -> new LinkedHashSet<>()).add(director);
+        }
+
+        return directorsMap;
+    }
+
+
+
 
 }
 

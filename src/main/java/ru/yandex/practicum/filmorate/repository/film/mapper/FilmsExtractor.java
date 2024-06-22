@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
-public class AllFilmsExtractor implements ResultSetExtractor<List<Film>> {
+public class FilmsExtractor implements ResultSetExtractor<List<Film>> {
     @Override
     public List<Film> extractData(ResultSet rs) throws SQLException, DataAccessException {
         Map<Long, Film> films = new LinkedHashMap<>();
