@@ -36,10 +36,6 @@ public class JdbcFilmRepository implements FilmRepository {
                 "WHERE f.film_id = :filmId";
         try {
             Film film = jdbs.queryForObject(sql, Map.of("filmId", filmId), new FilmRowMapper());
-            if (film.getGenres() != null) {
-                LinkedHashSet<Genre> genres = getGenres(filmId);
-                film.setGenres(genres);
-            }
             return Optional.ofNullable(film);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Фильм с id " + filmId + " не найден");
