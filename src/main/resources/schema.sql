@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS GENRES CASCADE;
 DROP TABLE IF EXISTS FILM_GENRE CASCADE;
 DROP TABLE IF EXISTS FILMS CASCADE;
 DROP TABLE IF EXISTS USERS CASCADE;
+DROP TABLE IF EXISTS REVIEWS CASCADE;
+DROP TABLE IF EXISTS REVIEWS_LIKES CASCADE;
 
 CREATE TABLE IF NOT EXISTS MPA_RATING
 (
@@ -60,6 +62,34 @@ CREATE TABLE IF NOT EXISTS FILM_GENRE
     FILM_GENRE_ID BIGINT PRIMARY KEY AUTO_INCREMENT,
     FILM_ID       BIGINT  NOT NULL,
     GENRE_ID      INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS reviews
+(
+    review_id   INTEGER auto_increment,
+    content     VARCHAR(155) NOT NULL,
+    is_positive BOOLEAN      NOT NULL,
+    user_id     INTEGER      NOT NULL,
+    film_id     INTEGER      NOT NULL,
+    constraint reviews_pk
+        primary key (review_id),
+    constraint reviews_FILMS_FILM_ID_fk
+        foreign key (film_id) references FILMS ON DELETE CASCADE,
+    constraint reviews_USERS_USER_ID_fk
+        foreign key (user_id) references USERS ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS reviews_likes
+(
+    review_id INTEGER NOT NULL,
+    user_id   INTEGER NOT NULL,
+    score     INTEGER NOT NULL,
+    constraint REVIEWS_LIKES_PK
+        primary key (REVIEW_ID, USER_ID),
+    constraint reviews_likes_REVIEWS_REVIEW_ID_fk
+        foreign key (review_id) references REVIEWS ON DELETE CASCADE,
+    constraint reviews_likes_USERS_USER_ID_fk
+        foreign key (user_id) references USERS ON DELETE CASCADE
 );
 
 ALTER TABLE
