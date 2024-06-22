@@ -81,12 +81,12 @@ public class JdbcFilmRepository implements FilmRepository {
         if (getById(film.getId()).isPresent()) {
 
             String sqlUpdateFilm = "UPDATE FILMS SET " +
-                                   "NAME = :name, " +
-                                   "DESCRIPTION = :description, " +
-                                   "RELEASE_DATE = :releaseDate, " +
-                                   "DURATION_IN_MIN = :duration, " +
-                                   "MPA_RATING_ID = :mpa_rating_id " +
-                                   "WHERE FILM_ID = :filmId";
+                    "NAME = :name, " +
+                    "DESCRIPTION = :description, " +
+                    "RELEASE_DATE = :releaseDate, " +
+                    "DURATION_IN_MIN = :duration, " +
+                    "MPA_RATING_ID = :mpa_rating_id " +
+                    "WHERE FILM_ID = :filmId";
 
             jdbs.update(sqlUpdateFilm, Map.of(
                     "filmId", film.getId(),
