@@ -33,5 +33,7 @@ public interface FilmService {
 
     Genre getGenreById(Integer genreId);
 
+    Collection<Film> getDirectorFilmsSorted(long directorId, String sortBy);
+
     void deleteFilm(long filmId);
 }

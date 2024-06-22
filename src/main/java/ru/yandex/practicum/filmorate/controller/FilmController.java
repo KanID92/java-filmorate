@@ -24,6 +24,15 @@ public class FilmController {
         return film;
     }
 
+    @GetMapping("/films/director/{directorId}")
+    public Collection<Film> getDirectorFilmsSorted(@PathVariable long directorId, @RequestParam String sortBy) {
+        log.info("==> GET /films/director/" + directorId + "  sortBy: " + sortBy);
+        Collection<Film> sortedFilms = filmService.getDirectorFilmsSorted(directorId, sortBy);
+        log.info("<== GET /films/director/" + directorId + "  sortBy: " + sortBy + " Размер возвращенного " +
+                "отсортированного списка фильмов режисера: " + sortedFilms.size());
+        return sortedFilms;
+    }
+
     @GetMapping("/films")
     public Collection<Film> getAll() {
         log.info("==> GET /films ");

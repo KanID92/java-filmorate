@@ -8,12 +8,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
 import ru.yandex.practicum.filmorate.repository.film.JdbcFilmRepository;
 import ru.yandex.practicum.filmorate.repository.genre.JdbcGenreRepository;
 import ru.yandex.practicum.filmorate.repository.like.JdbcLikeRepository;
+import ru.yandex.practicum.filmorate.service.director.BaseDirectorService;
 import ru.yandex.practicum.filmorate.service.film.BaseFilmService;
 
 import java.time.LocalDate;
@@ -41,6 +43,7 @@ public class JdbcFilmRepositoryTest {
     public static final int testFilm1Duration = 113;
     LinkedHashSet<Genre> genreSet1 = new LinkedHashSet<>();
     public static final MPARating test1Film1MpaRating = new MPARating(5, "NC17");
+    LinkedHashSet<Director> directorsSet1 = new LinkedHashSet<>();
 
 
     public static final long testFilm2Id = 2;
@@ -50,6 +53,7 @@ public class JdbcFilmRepositoryTest {
     public static final int testFilm2Duration = 112;
     LinkedHashSet<Genre> genreSet2 = new LinkedHashSet<>();
     public static final MPARating test1Film2MpaRating = new MPARating(3, "PG13");
+    LinkedHashSet<Director> directorsSet2 = new LinkedHashSet<>();
 
     public static final long testFilm3Id = 3;
     public static final String testFilm3Name = "Каспер";
@@ -58,6 +62,7 @@ public class JdbcFilmRepositoryTest {
     public static final int testFilm3Duration = 100;
     LinkedHashSet<Genre> genreSet3 = new LinkedHashSet<>();
     public static final MPARating test1Film3MpaRating = new MPARating(1, "G");
+    LinkedHashSet<Director> directorsSet3 = new LinkedHashSet<>();
 
     public static final long testFilm4Id = 4;
     public static final String testFilm4Name = "Титаник";
@@ -66,6 +71,7 @@ public class JdbcFilmRepositoryTest {
     public static final int testFilm4Duration = 194;
     LinkedHashSet<Genre> genreSet4 = new LinkedHashSet<>();
     public static final MPARating test1Film4MpaRating = new MPARating(2, "PG");
+    LinkedHashSet<Director> directorsSet4 = new LinkedHashSet<>();
 
     public static final long testFilm5Id = 5;
     public static final String testFilm5Name = "Загрузка: подлинная история интернета";
@@ -74,8 +80,14 @@ public class JdbcFilmRepositoryTest {
     public static final int testFilm5Duration = 44;
     LinkedHashSet<Genre> genreSet5 = new LinkedHashSet<>();
     public static final MPARating test1Film5MpaRating = new MPARating(5, "R");
+    LinkedHashSet<Director> directorsSet5 = new LinkedHashSet<>();
+
+    LinkedHashSet<Director> directorsSet6 = new LinkedHashSet<>();
+
     @Autowired
     private BaseFilmService baseFilmService;
+    @Autowired
+    private BaseDirectorService baseDirectorService;
 
 
     @Test
@@ -90,6 +102,9 @@ public class JdbcFilmRepositoryTest {
         genreSet1.add(genre1);
         genreSet1.add(genre2);
 
+        directorsSet1.add(new Director(1, "Гай Ричи"));
+
+
         Film film = baseFilmService.getById(testFilm1Id);
         System.out.println(genreSet1);
         System.out.println(film);
@@ -100,7 +115,8 @@ public class JdbcFilmRepositoryTest {
                 testFilm1ReleaseDate,
                 testFilm1Duration,
                 genreSet1,
-                test1Film1MpaRating);
+                test1Film1MpaRating,
+                directorsSet1);
         testFilm.setGenres(genreSet1);
         assertThat(film)
                 .usingRecursiveComparison()
@@ -122,6 +138,11 @@ public class JdbcFilmRepositoryTest {
         genreSet2.add(genre1);
         genreSet2.add(genre2);
 
+        Director director = new Director(7, "Спилберг");
+        baseDirectorService.save(director);
+
+        directorsSet6.add(director);
+
         Film newFilm = makeTestFilm(
                 6,
                 "Отступники",
@@ -129,7 +150,8 @@ public class JdbcFilmRepositoryTest {
                 LocalDate.parse("2000-01-14"),
                 241,
                 genreSet2,
-                new MPARating(5, "NC17"));
+                new MPARating(5, "NC17"),
+                directorsSet6);
 
         baseFilmService.save(newFilm);
         Film filmFromDB = baseFilmService.getById(6);
@@ -188,7 +210,8 @@ public class JdbcFilmRepositoryTest {
 
 
     public Film makeTestFilm(long id, String name, String description, LocalDate release,
-                             int duration, LinkedHashSet<Genre> genres, MPARating rating) {
+                             int duration, LinkedHashSet<Genre> genres, MPARating rating,
+                             LinkedHashSet<Director> directors) {
         Film testFilm = new Film();
         testFilm.setId(id);
         testFilm.setName(name);
@@ -197,6 +220,7 @@ public class JdbcFilmRepositoryTest {
         testFilm.setDuration(duration);
         testFilm.setGenres(genres);
         testFilm.setMpa(rating);
+        testFilm.setDirectors(directors);
         return testFilm;
     }
 }
