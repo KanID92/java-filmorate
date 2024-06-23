@@ -5,8 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.repository.film.FilmRepository;
+import ru.yandex.practicum.filmorate.repository.feed.FeedRepository;
 import ru.yandex.practicum.filmorate.repository.friend.FriendRepository;
 import ru.yandex.practicum.filmorate.repository.user.UserRepository;
 import ru.yandex.practicum.filmorate.service.validation.ValidationService;
@@ -24,6 +28,7 @@ public class BaseUserService implements UserService {
     private final ValidationService validationService;
     private final FriendRepository friendRepository;
     private final FilmRepository filmRepository;
+    private final FeedRepository feedRepository;
 
     @Override
     public User getById(long userId) {
@@ -66,6 +71,12 @@ public class BaseUserService implements UserService {
 
         friendRepository.add(userId, friendId);
 
+        Feed feed = new Feed();
+        feed.setUserId(userId);
+        feed.setEntityId(friendId);
+        feed.setEventType(EventType.FRIEND);
+        feed.setOperation(EventOperation.ADD);
+        feedRepository.add(feed);
     }
 
     @Override
@@ -77,7 +88,12 @@ public class BaseUserService implements UserService {
                 .orElseThrow(() -> new NotFoundException("Пользователь с данным id=" + friendId + " не найден"));
 
         friendRepository.delete(userId, friendId);
-
+        Feed feed = new Feed();
+        feed.setUserId(userId);
+        feed.setEntityId(friendId);
+        feed.setEventType(EventType.FRIEND);
+        feed.setOperation(EventOperation.REMOVE);
+        feedRepository.add(feed);
     }
 
     @Override

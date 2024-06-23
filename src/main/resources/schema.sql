@@ -9,6 +9,9 @@ DROP TABLE IF EXISTS FILMS CASCADE;
 DROP TABLE IF EXISTS USERS CASCADE;
 DROP TABLE IF EXISTS REVIEWS CASCADE;
 DROP TABLE IF EXISTS REVIEWS_LIKES CASCADE;
+DROP TABLE IF EXISTS FEEDS CASCADE;
+DROP TABLE IF EXISTS EVENT_OPERATIONS CASCADE;
+DROP TABLE IF EXISTS EVENT_TYPES CASCADE;
 
 CREATE TABLE IF NOT EXISTS MPA_RATING
 (
@@ -91,6 +94,38 @@ CREATE TABLE IF NOT EXISTS reviews_likes
     constraint reviews_likes_REVIEWS_REVIEW_ID_fk
         foreign key (review_id) references REVIEWS ON DELETE CASCADE,
     constraint reviews_likes_USERS_USER_ID_fk
+        foreign key (user_id) references USERS ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS event_types
+(
+    types_id INTEGER auto_increment,
+    name     VARCHAR(15) not null,
+    constraint event_types_pk
+        primary key (types_id)
+);
+CREATE TABLE IF NOT EXISTS event_operations
+(
+    operation_id INTEGER auto_increment,
+    name         VARCHAR(15),
+    constraint event_operations_pk
+        primary key (operation_id)
+);
+CREATE TABLE IF NOT EXISTS feeds
+(
+    event_id   INTEGER auto_increment,
+    timestamp  TIMESTAMP    default current_timestamp ,
+    user_id    INTEGER not null,
+    event_type INTEGER not null,
+    operation  INTEGER not null,
+    entity_id  INTEGER not null,
+    constraint feeds_pk
+        primary key (event_id),
+    constraint feeds_EVENT_OPERATIONS_OPERATION_ID_fk
+        foreign key (operation) references EVENT_OPERATIONS,
+    constraint feeds_EVENT_TYPES_TYPES_ID_fk
+        foreign key (event_type) references EVENT_TYPES,
+    constraint feeds_USERS_USER_ID_fk
         foreign key (user_id) references USERS ON DELETE CASCADE
 );
 
