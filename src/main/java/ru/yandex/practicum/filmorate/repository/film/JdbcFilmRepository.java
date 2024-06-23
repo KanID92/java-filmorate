@@ -99,6 +99,7 @@ public class JdbcFilmRepository implements FilmRepository {
             String sqlDeleteGenresBond = "DELETE FROM FILM_GENRE WHERE FILM_ID = :filmId";
             jdbs.update(sqlDeleteGenresBond, Map.of("filmId", film.getId()));
 
+            //createFilmMpaBond(film);
             createFilmGenresBond(film);
 
             return film;
@@ -122,8 +123,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 "LEFT JOIN film_genre AS fg ON fg.film_id = f.film_id " +
                 "LEFT JOIN genres AS g ON g.genre_id = fg.genre_id " +
                 "LEFT JOIN MPA_rating AS mr ON f.mpa_rating_id = mr.mpa_rating_id";
-
-        return setGenresAndDirectors(jdbs.query(sql, new FilmsExtractor()));
+        return jdbs.query(sql, new AllFilmsExtractor());
     }
 
 
@@ -307,9 +307,5 @@ public class JdbcFilmRepository implements FilmRepository {
 
         return directorsMap;
     }
-
-
-
-
 }
 
