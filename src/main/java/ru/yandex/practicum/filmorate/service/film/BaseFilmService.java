@@ -77,8 +77,6 @@ public class BaseFilmService implements FilmService {
 
     @Override
     public Collection<Film> getAll() {
-        Collection<Film> filmsDb = filmRepository.getAll();
-        Collection<Genre> genresDb = genreRepository.getAll();
         return filmRepository.getAll();
     }
 
@@ -118,8 +116,8 @@ public class BaseFilmService implements FilmService {
     }
 
     @Override
-    public Collection<Film> getMostLikedFilms(long limit) {
-        return filmRepository.getTopPopular(limit);
+    public Collection<Film> getMostLikedFilms(Long limit, Integer genreId, Integer year) {
+        return filmRepository.getTopPopular(limit, genreId, year);
     }
 
     @Override

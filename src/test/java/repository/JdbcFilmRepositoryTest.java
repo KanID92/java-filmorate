@@ -19,8 +19,10 @@ import ru.yandex.practicum.filmorate.service.director.BaseDirectorService;
 import ru.yandex.practicum.filmorate.service.film.BaseFilmService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -205,7 +207,21 @@ public class JdbcFilmRepositoryTest {
     @Test
     public void testGetTopPopular() {
         long count = 10;
-        assertTrue(count >= filmRepository.getTopPopular(count).size());
+        int genre = 1;
+        int year = 2008;
+
+        Collection<Film> films = filmRepository.getTopPopular(count, genre, year);
+
+        assertTrue(count >= films.size());
+        for (Film film : films) {
+            LinkedHashSet<Genre> genresSet = film.getGenres();
+            List<Integer> genresId = new ArrayList<>();
+            for (Genre genre1 : genresSet) {
+                genresId.add(genre1.getId());
+            }
+            assertTrue(genresId.contains(genre));
+            assertEquals(Integer.valueOf(film.getReleaseDate().getYear()), year);
+        }
     }
 
 

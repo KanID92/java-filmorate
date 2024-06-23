@@ -19,7 +19,7 @@ public interface FilmRepository {
 
     Optional<Film> getById(long filmId);
 
-    Collection<Film> getTopPopular(long count);
+    Collection<Film> getTopPopular(Long count, Integer genreId, Integer year);
 
     Collection<Film> getSortedFilmsByDirector(long directorId, String sortBy);
 
