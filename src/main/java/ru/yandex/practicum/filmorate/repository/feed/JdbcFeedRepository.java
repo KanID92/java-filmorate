@@ -18,9 +18,9 @@ public class JdbcFeedRepository implements FeedRepository {
     @Override
     public Collection<Feed> getAllByUser(long userId) {
         String sql = "SELECT * FROM FEEDS " +
-                "LEFT JOIN PUBLIC.EVENT_TYPES ET on ET.TYPES_ID = FEEDS.EVENT_TYPE " +
-                "LEFT JOIN PUBLIC.EVENT_OPERATIONS EO on EO.OPERATION_ID = FEEDS.OPERATION " +
-                "WHERE USER_ID = :userId";
+                     "LEFT JOIN PUBLIC.EVENT_TYPES ET on ET.TYPES_ID = FEEDS.EVENT_TYPE " +
+                     "LEFT JOIN PUBLIC.EVENT_OPERATIONS EO on EO.OPERATION_ID = FEEDS.OPERATION " +
+                     "WHERE USER_ID = :userId";
         return jdbc.query(sql, Map.of("userId", userId), feedRowMapper);
     }
 
