@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.repository.film.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
@@ -34,6 +35,14 @@ public class FilmExtractor implements ResultSetExtractor<Film> {
                 film.getGenres().add(
                         new Genre(rs.getInt("genre_id"), rs.getString("genre_name")));
             }
+            long directorId = rs.getLong("director_id");
+            String directorName = rs.getString("director_name");
+            if (directorId != 0 || directorName != null) {
+                film.getDirectors().add(
+                        new Director(rs.getInt("director_id"), rs.getString("director_name"))
+                );
+            }
+
         }
         return film;
     }

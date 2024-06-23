@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.repository.film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.genre.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.like.LikeRepository;
 import ru.yandex.practicum.filmorate.repository.mpa.MPARatingRepository;
+import ru.yandex.practicum.filmorate.service.director.DirectorService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.service.validation.ValidationService;
 
@@ -27,12 +28,14 @@ public class BaseFilmService implements FilmService {
     private final UserService userService;
     private final ValidationService validationService;
     private final MPARatingRepository mpaRatingRepository;
+    private final DirectorService directorService;
 
     @Override
     public Film getById(long filmId) {
         Film film = filmRepository.getById(filmId).orElseThrow(
                 () -> new NotFoundException("Фильм с id=" + filmId + " не найден"));
         film.setGenres(filmRepository.getGenres(filmId));
+        film.setDirectors(directorService.getDirectors(filmId));
         return film;
     }
 
@@ -46,6 +49,7 @@ public class BaseFilmService implements FilmService {
         }
         Film filmSaved = filmRepository.save(film);
         filmSaved.setGenres(filmRepository.getGenres(film.getId()));
+        filmSaved.setDirectors(directorService.getDirectors(film.getId()));
         return filmSaved;
     }
 
@@ -75,6 +79,8 @@ public class BaseFilmService implements FilmService {
 
     @Override
     public Collection<Film> getAll() {
+        Collection<Film> filmsDb = filmRepository.getAll();
+        Collection<Genre> genresDb = genreRepository.getAll();
         return filmRepository.getAll();
     }
 
@@ -96,6 +102,11 @@ public class BaseFilmService implements FilmService {
     @Override
     public void deleteFilm(long filmId) {
         filmRepository.deleteById(filmId);
+    }
+
+    @Override
+    public Collection<Film> getDirectorFilmsSorted(long directorId, String sortBy) {
+        return filmRepository.getSortedFilmsByDirector(directorId, sortBy);
     }
 
     @Override

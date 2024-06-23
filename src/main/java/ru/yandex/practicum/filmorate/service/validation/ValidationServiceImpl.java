@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service.validation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
@@ -72,6 +73,14 @@ public class ValidationServiceImpl implements ValidationService {
         if (film.getDuration() <= 0) {
             log.warn("Продолжительность фильма - отрицательное или нулевой значение");
             throw new ValidationException("Продолжительность фильма должна быть положительным числом.");
+        }
+    }
+
+    @Override
+    public void validateNewData(Director director) {
+        if (director.getName() == null || director.getName().isBlank()) {
+            log.warn("Имя режиссера - пустое.");
+            throw new ValidationException("Имя режиссера не должно быть пустым.");
         }
     }
 

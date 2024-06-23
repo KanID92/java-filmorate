@@ -21,5 +21,7 @@ public interface FilmRepository {
 
     Collection<Film> getTopPopular(long count);
 
+    Collection<Film> getSortedFilmsByDirector(long directorId, String sortBy);
+
     LinkedHashSet<Genre> getGenres(long filmId);
 }
