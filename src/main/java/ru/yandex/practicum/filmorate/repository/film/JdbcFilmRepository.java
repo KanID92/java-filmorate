@@ -28,12 +28,11 @@ public class JdbcFilmRepository implements FilmRepository {
     private static final Logger log = LoggerFactory.getLogger(JdbcFilmRepository.class);
     private final NamedParameterJdbcOperations jdbs;
 
-
     @Override
     public Optional<Film> getById(long filmId) {
         String sql = "SELECT * FROM films AS f " +
-                "LEFT OUTER JOIN MPA_rating AS mr ON f.mpa_rating_id = mr.mpa_rating_id " +
-                "WHERE f.film_id = :filmId";
+                     "LEFT OUTER JOIN MPA_rating AS mr ON f.mpa_rating_id = mr.mpa_rating_id " +
+                     "WHERE f.film_id = :filmId";
         try {
             Film film = jdbs.queryForObject(sql, Map.of("filmId", filmId), new FilmRowMapper());
             if (film.getGenres() != null) {
@@ -61,8 +60,8 @@ public class JdbcFilmRepository implements FilmRepository {
 
 
         jdbs.update("INSERT INTO FILMS (" +
-                        "NAME, DESCRIPTION, RELEASE_DATE, DURATION_IN_MIN, MPA_RATING_ID) " +
-                        "VALUES (:name, :description, :release_date, :duration_in_sec, :mpa_rating_id)",
+                    "NAME, DESCRIPTION, RELEASE_DATE, DURATION_IN_MIN, MPA_RATING_ID) " +
+                    "VALUES (:name, :description, :release_date, :duration_in_sec, :mpa_rating_id)",
                 params, keyHolderFilms, new String[]{"film_id"});
 
 
@@ -82,12 +81,12 @@ public class JdbcFilmRepository implements FilmRepository {
         if (getById(film.getId()).isPresent()) {
 
             String sqlUpdateFilm = "UPDATE FILMS SET " +
-                    "NAME = :name, " +
-                    "DESCRIPTION = :description, " +
-                    "RELEASE_DATE = :releaseDate, " +
-                    "DURATION_IN_MIN = :duration, " +
-                    "MPA_RATING_ID = :mpa_rating_id " +
-                    "WHERE FILM_ID = :filmId";
+                                   "NAME = :name, " +
+                                   "DESCRIPTION = :description, " +
+                                   "RELEASE_DATE = :releaseDate, " +
+                                   "DURATION_IN_MIN = :duration, " +
+                                   "MPA_RATING_ID = :mpa_rating_id " +
+                                   "WHERE FILM_ID = :filmId";
 
             jdbs.update(sqlUpdateFilm, Map.of(
                     "filmId", film.getId(),
@@ -132,12 +131,12 @@ public class JdbcFilmRepository implements FilmRepository {
     public Collection<Film> getTopPopular(long countTop) {
 
         String sqlTopFilms = "SELECT f.*, mr.name " +
-                "FROM FILMS AS f " +
-                "LEFT JOIN LIKES AS l ON f.film_id = l.film_id " +
-                "LEFT JOIN MPA_RATING AS mr ON f.mpa_rating_id = mr.mpa_rating_id " +
-                "GROUP BY f.film_id " +
-                "ORDER BY COUNT(l.film_id) DESC " +
-                "LIMIT :countTop";
+                             "FROM FILMS AS f " +
+                             "LEFT JOIN LIKES AS l ON f.film_id = l.film_id " +
+                             "LEFT JOIN MPA_RATING AS mr ON f.mpa_rating_id = mr.mpa_rating_id " +
+                             "GROUP BY f.film_id " +
+                             "ORDER BY COUNT(l.film_id) DESC " +
+                             "LIMIT :countTop";
 
         Collection<Film> topFilms = jdbs.query(sqlTopFilms, Map.of("countTop", countTop),
                 new FilmsExtractor());
@@ -195,10 +194,10 @@ public class JdbcFilmRepository implements FilmRepository {
     @Override
     public LinkedHashSet<Genre> getGenres(long filmId) {
         String sql = "Select fg.genre_id, g.genre_name " +
-                "FROM film_genre AS fg " +
-                "LEFT OUTER JOIN genres AS g ON fg.genre_id = g.genre_id " +
-                "WHERE fg.film_id = :filmId " +
-                "ORDER BY g.genre_id";
+                     "FROM film_genre AS fg " +
+                     "LEFT OUTER JOIN genres AS g ON fg.genre_id = g.genre_id " +
+                     "WHERE fg.film_id = :filmId " +
+                     "ORDER BY g.genre_id";
         return new LinkedHashSet<>(jdbs.query(sql, Map.of("filmId", filmId), new GenreRowMapper()));
     }
 
@@ -224,7 +223,7 @@ public class JdbcFilmRepository implements FilmRepository {
             }
 
             jdbs.batchUpdate("INSERT INTO FILM_GENRE (FILM_ID, GENRE_ID) " +
-                            "VALUES (:filmId, :genreId)",
+                             "VALUES (:filmId, :genreId)",
                     paramsGenres, keyHolderGenres, new String[]{"film_genre_id"});
         }
     }
@@ -267,9 +266,9 @@ public class JdbcFilmRepository implements FilmRepository {
 
     private Map<Long, LinkedHashSet<Genre>> getGenresForFilms(List<Long> filmIds) {
         String sql = "SELECT fg.FILM_ID, g.Genre_ID, g.GENRE_NAME " +
-                "FROM FILM_GENRE AS fg " +
-                "JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
-                "WHERE fg.FILM_ID IN (:filmIds)";
+                     "FROM FILM_GENRE AS fg " +
+                     "JOIN GENRES AS g ON fg.GENRE_ID = g.GENRE_ID " +
+                     "WHERE fg.FILM_ID IN (:filmIds)";
         if (filmIds.isEmpty()) {
             return Collections.emptyMap();
         }
