@@ -15,8 +15,7 @@ import ru.yandex.practicum.filmorate.service.director.DirectorService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.service.validation.ValidationService;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -121,5 +120,18 @@ public class BaseFilmService implements FilmService {
     @Override
     public Collection<Film> getMostLikedFilms(long limit) {
         return filmRepository.getTopPopular(limit);
+    }
+
+    @Override
+    public List<Film> commonFilms(long userId, long friendId) {
+        Set<Long> userFilms = new HashSet<>(userService.findAllFilmLikes(userId));
+        Set<Long> friendFilms = new HashSet<>(userService.findAllFilmLikes(friendId));
+
+        return new ArrayList<>(userFilms.stream()
+                .filter(friendFilms::contains)
+                .map(filmRepository::getById)
+                .map(Optional::orElseThrow)
+                .sorted(Collections.reverseOrder(Comparator.comparing(o -> likeRepository.findAllFilmLikes(o.getId()).size())))
+                .toList());
     }
 }
