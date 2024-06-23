@@ -29,7 +29,7 @@ public interface FilmService {
 
     Collection<MPARating> getAllMPARatings();
 
-    Collection<Film> getMostLikedFilms(long limit);
+    Collection<Film> getMostLikedFilms(Long limit, Integer genreId, Integer year);
 
     Genre getGenreById(Integer genreId);
 

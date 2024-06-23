@@ -125,17 +125,53 @@ public class JdbcFilmRepository implements FilmRepository {
 
 
     @Override
-    public Collection<Film> getTopPopular(long countTop) {
+    public Collection<Film> getTopPopular(Long countTop, Integer genreId, Integer year) {
 
-        String sqlTopFilms = "SELECT f.*, mr.name " +
+        Collection<Film> topFilms;
+        Map<String, Object> params = new HashMap<>();
+
+        String sqlTopFilmsCount = "";
+        String sqlTopFilmsGenreId = "";
+        String sqlTopFilmsYear = "";
+        String sqlWhere = "";
+        String sqlAnd = "";
+
+        if (countTop != null) {
+            log.debug("Выполнено условие лимит не равен null");
+            sqlTopFilmsCount = "LIMIT :countTop";
+            params.put("countTop", countTop);
+        }
+        if (genreId != null) {
+            log.debug("Выполнено условие год жанр не равен null");
+            sqlWhere = "WHERE ";
+            sqlTopFilmsGenreId = "fg.genre_id = :genreId ";
+            params.put("genreId", genreId);
+        }
+        if (year != null) {
+            log.debug("Выполнено условие год не равен null");
+            sqlWhere = "WHERE ";
+            sqlTopFilmsYear = "YEAR(f.release_date) = :year ";
+            params.put("year", year);
+        }
+
+        if (genreId != null && year != null) {
+            log.debug("Выполнено условие жанр и год не равны null");
+            sqlAnd = "AND ";
+        }
+
+
+        String sqlTopFilmsBase = "SELECT f.*, mr.name " +
                 "FROM FILMS AS f " +
                 "LEFT JOIN LIKES AS l ON f.film_id = l.film_id " +
                 "LEFT JOIN MPA_RATING AS mr ON f.mpa_rating_id = mr.mpa_rating_id " +
+                "LEFT JOIN FILM_GENRE AS fg ON f.film_id = fg.film_id " +
+                sqlWhere + sqlTopFilmsGenreId + sqlAnd + sqlTopFilmsYear +
                 "GROUP BY f.film_id " +
                 "ORDER BY COUNT(l.film_id) DESC " +
-                "LIMIT :countTop";
+                sqlTopFilmsCount;
 
-        Collection<Film> topFilms = jdbs.query(sqlTopFilms, Map.of("countTop", countTop),
+
+        topFilms = jdbs.query(sqlTopFilmsBase, params,
                 new FilmsExtractor());
 
         return setGenresAndDirectors(topFilms);
@@ -169,14 +205,16 @@ public class JdbcFilmRepository implements FilmRepository {
         switch (sortBy) {
             case "year":
                 log.info("Вариант сортировки по году:  " + sortBy);
-                Collection<Film> directorFilmsByYear = jdbs.query(queryYear, Map.of("directorId", directorId), new FilmsExtractor());
+                Collection<Film> directorFilmsByYear = jdbs.query(queryYear, Map.of("directorId", directorId),
+                        new FilmsExtractor());
                 log.info("Из DB получен список размером:  " + directorFilmsByYear.size());
 
                 return setGenresAndDirectors(directorFilmsByYear);
 
             case "likes":
                 log.info("Вариант сортировки по лайкам:  " + sortBy);
-                Collection<Film> directorFilmsByLikes = jdbs.query(queryLikes, Map.of("directorId", directorId), new FilmsExtractor());
+                Collection<Film> directorFilmsByLikes = jdbs.query(queryLikes, Map.of("directorId", directorId),
+                        new FilmsExtractor());
                 log.info("Из DB получен список размером:  " + directorFilmsByLikes.size());
 
                 return setGenresAndDirectors(directorFilmsByLikes);

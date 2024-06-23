@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.MPARating;
-import ru.yandex.practicum.filmorate.repository.mapper.MPARowMapper;
+import ru.yandex.practicum.filmorate.repository.mpa.mapper.MPARowMapper;
 
 import java.util.*;
 
