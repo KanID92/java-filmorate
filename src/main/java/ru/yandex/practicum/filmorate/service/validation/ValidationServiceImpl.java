@@ -13,10 +13,7 @@ import java.time.Month;
 @Slf4j
 @Service
 public class ValidationServiceImpl implements ValidationService {
-
     public static final LocalDate FIRST_FILM_DATE = LocalDate.of(1895, Month.DECEMBER, 28);
-
-    //USER VALIDATIONS
 
     @Override
     public void validateNewData(User user) {

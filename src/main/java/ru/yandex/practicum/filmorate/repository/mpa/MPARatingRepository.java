@@ -9,5 +9,4 @@ public interface MPARatingRepository {
     Collection<MPARating> getAllMPARatings();
 
     MPARating getMPARatingById(int mpaId);
-
 }

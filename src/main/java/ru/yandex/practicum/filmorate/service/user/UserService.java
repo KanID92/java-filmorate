@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface UserService {
 
-    //USERS
-
     User getById(long userId);
 
     void deleteById(long userId);
@@ -20,8 +18,6 @@ public interface UserService {
     User create(User user);
 
     User update(User user);
-
-    //FRIENDS
 
     void addFriend(long userId1, long userId2);
 

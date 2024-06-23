@@ -13,7 +13,6 @@ import java.util.*;
 @Repository
 @RequiredArgsConstructor
 public class JdbcMPARatingRepository implements MPARatingRepository {
-
     private final NamedParameterJdbcOperations jdbc;
 
     @Override

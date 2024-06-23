@@ -20,7 +20,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BaseFilmService implements FilmService {
-
     private final FilmRepository filmRepository;
     private final GenreRepository genreRepository;
     private final LikeRepository likeRepository;

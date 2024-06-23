@@ -20,11 +20,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class BaseUserService implements UserService {
-
     private final UserRepository userRepository;
-
     private final ValidationService validationService;
-
     private final FriendRepository friendRepository;
     private final FilmRepository filmRepository;
 

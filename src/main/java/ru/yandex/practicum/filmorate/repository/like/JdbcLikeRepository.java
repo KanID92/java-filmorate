@@ -12,7 +12,6 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 public class JdbcLikeRepository implements LikeRepository {
-
     private final NamedParameterJdbcOperations jdbc;
 
     @Override

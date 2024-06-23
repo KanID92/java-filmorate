@@ -13,13 +13,12 @@ import java.util.*;
 @Repository
 @RequiredArgsConstructor
 public class JdbcGenreRepository implements GenreRepository {
-
     private final NamedParameterJdbcOperations jdbc;
 
     @Override
     public List<Genre> getAllFilmGenres(Long filmId) {
         String sql = "SELECT g.genre_name from film_genre AS fg " +
-                "LEFT JOIN genres AS g ON fg.genre_id = g.genre_id where film_id = :filmId";
+                     "LEFT JOIN genres AS g ON fg.genre_id = g.genre_id where film_id = :filmId";
         return jdbc.queryForList(sql, Map.of("filmId", filmId), Genre.class);
     }
 
@@ -43,5 +42,4 @@ public class JdbcGenreRepository implements GenreRepository {
             throw new NotFoundException("Не найдет genreID = " + genreId);
         }
     }
-
 }
