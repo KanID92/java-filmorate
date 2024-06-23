@@ -3,7 +3,11 @@ package ru.yandex.practicum.filmorate.service.review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.repository.feed.FeedRepository;
 import ru.yandex.practicum.filmorate.repository.film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.review.ReviewRepository;
 import ru.yandex.practicum.filmorate.repository.user.UserRepository;
@@ -18,13 +22,21 @@ public class ReviewServiceImpl implements ReviewService {
     private final ValidationService validationService;
     private final UserRepository userRepository;
     private final FilmRepository filmRepository;
+    private final FeedRepository feedRepository;
 
     @Override
     public Review create(Review review) {
         validationService.validateNewData(review);
         checkUser(review.getUserId());
         checkUser(review.getFilmId());
-        reviewRepository.create(review);
+        Review reviewWithId = reviewRepository.create(review);
+
+        Feed feed = new Feed();
+        feed.setEventType(EventType.REVIEW);
+        feed.setOperation(EventOperation.ADD);
+        feed.setUserId(review.getUserId());
+        feed.setEntityId(reviewWithId.getId());
+        feedRepository.add(feed);
         return review;
     }
 
@@ -34,11 +46,25 @@ public class ReviewServiceImpl implements ReviewService {
         checkUser(review.getUserId());
         checkUser(review.getFilmId());
         reviewRepository.update(review);
+
+        Feed feed = new Feed();
+        feed.setEventType(EventType.REVIEW);
+        feed.setOperation(EventOperation.UPDATE);
+        feed.setUserId(review.getUserId());
+        feed.setEntityId(review.getId());
+        feedRepository.add(feed);
         return review;
     }
 
     @Override
     public void delete(Long id) {
+        Review review = getById(id);
+        Feed feed = new Feed();
+        feed.setEventType(EventType.REVIEW);
+        feed.setOperation(EventOperation.REMOVE);
+        feed.setUserId(review.getUserId());
+        feed.setEntityId(review.getId());
+        feedRepository.add(feed);
         reviewRepository.delete(id);
     }
 

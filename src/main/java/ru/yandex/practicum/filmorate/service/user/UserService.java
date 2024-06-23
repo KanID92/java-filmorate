@@ -30,5 +30,4 @@ public interface UserService {
 
     Collection<User> getCommonFriends(long userId1, long userId2);
 
-
 }

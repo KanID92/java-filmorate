@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import java.util.Collection;
@@ -14,7 +16,7 @@ import java.util.Collection;
 public class UserController {
 
     private final UserService userService;
-
+    private final FeedService feedService;
 
     @GetMapping("/users")
     public Collection<User> getAll() {
@@ -89,5 +91,10 @@ public class UserController {
         log.info("==> DELETE /users/" + userId);
         userService.deleteById(userId);
         log.info("Удален пользовател с id=" + userId);
+    }
+
+    @GetMapping("/users/{id}/feed")
+    public Collection<Feed> getFeeds(@PathVariable("id") long userId) {
+        return feedService.getFeeds(userId);
     }
 }

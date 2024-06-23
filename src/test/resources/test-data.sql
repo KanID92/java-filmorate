@@ -80,4 +80,15 @@ VALUES (1, 3, 1),
        (2, 3, -1),
        (3, 1, 1);
 
+INSERT INTO EVENT_TYPES (NAME)
+VALUES ('LIKE'),
+       ('REVIEW'),
+       ('FRIEND');
 
+INSERT INTO EVENT_OPERATIONS (NAME)
+VALUES ('REMOVE'),
+       ('ADD'),
+       ('UPDATE');
+INSERT INTO FEEDS (USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID)
+VALUES (1,1,2,1 ),
+       (1,3,2,2);
