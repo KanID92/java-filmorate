@@ -95,4 +95,10 @@ public class UserController {
     public List<Long> findAllFilmLikes(@PathVariable("id") long userId) {
         return userService.findAllFilmLikes(userId);
     }
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(@PathVariable long userId) {
+        log.info("==> DELETE /users/" + userId);
+        userService.deleteById(userId);
+        log.info("Удален пользовател с id=" + userId);
+    }
 }

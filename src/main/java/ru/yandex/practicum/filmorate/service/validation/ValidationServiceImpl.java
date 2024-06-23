@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -31,6 +32,22 @@ public class ValidationServiceImpl implements ValidationService {
         }
         if (user.getName() == null) {
             user.setName(user.getLogin());
+        }
+    }
+
+    @Override
+    public void validateNewData(Review review) {
+        if (review.getContent() == null || review.getContent().isEmpty()) {
+            throw new ValidationException("Отзыв не может быть пустым");
+        }
+        if (review.getUserId() == 0) {
+            throw new ValidationException("Не указан ID пользователя для отзыва");
+        }
+        if (review.getFilmId() == 0) {
+            throw new ValidationException("Не указан ID фильма для отзыва");
+        }
+        if (review.getIsPositive() == null) {
+            throw new ValidationException("Не указан тип отзыва");
         }
     }
 

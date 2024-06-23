@@ -65,8 +65,19 @@ VALUES (1, 2),
        (2, 4),
        (3, 5);
 
+--REVIEW
+INSERT INTO REVIEWS (CONTENT, IS_POSITIVE, USER_ID, FILM_ID)
+VALUES ('test1', true, 1, 1),
+       ('test2', true, 2, 1),
+       ('test3', true, 3, 2),
+       ('test4', true, 4, 2);
 
-
-
+--REVIEWS_LIKES
+INSERT INTO REVIEWS_LIKES (REVIEW_ID, USER_ID, SCORE)
+VALUES (1, 3, 1),
+       (1, 4, 1),
+       (1, 2, 1),
+       (2, 3, -1),
+       (3, 1, 1);
 
 
