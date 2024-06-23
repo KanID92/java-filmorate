@@ -34,4 +34,6 @@ public interface FilmService {
     Genre getGenreById(Integer genreId);
 
     void deleteFilm(long filmId);
+
+    List<Film> commonFilms(long userId, long friendId);
 }

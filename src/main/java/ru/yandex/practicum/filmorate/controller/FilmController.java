@@ -8,13 +8,16 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 
-import java.util.Collection;
+import java.util.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class FilmController {
+
     private final FilmService filmService;
+
+    //========================/GET/==============================//
 
     @GetMapping("/films/{id}")
     public Film get(@PathVariable long id) {
@@ -77,6 +80,13 @@ public class FilmController {
         return mpaRating;
     }
 
+    @GetMapping("/films/common")
+    public List<Film> commonFilms(@RequestParam long userId, @RequestParam long friendId) {
+        return filmService.commonFilms(userId, friendId);
+    }
+
+    //========================/POST/==============================//
+
     @PostMapping("/films")
     public Film save(@RequestBody Film film) {
         log.info("==> POST /films " + film);
@@ -84,6 +94,8 @@ public class FilmController {
         log.info("<== POST /films" + newFilm);
         return newFilm;
     }
+
+    //=========================/PUT/==============================//
 
     @PutMapping("/films")
     public Film update(@RequestBody Film film) {
@@ -100,6 +112,8 @@ public class FilmController {
         log.info("<== PUT /films/" + id + "/like/" + userId + "  Лайк фильму " + filmService.getById(id).getName()
                  + " от пользователя с ID=" + userId + " поставлен");
     }
+
+    //========================/DELETE/==============================//
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public void deleteLike(@PathVariable long id, @PathVariable long userId) {
