@@ -132,17 +132,4 @@ public class BaseFilmService implements FilmService {
                 .sorted(Collections.reverseOrder(Comparator.comparing(o -> likeRepository.findAllFilmLikes(o.getId()).size())))
                 .toList());
     }
-
-    @Override
-    public List<Film> commonFilms(long userId, long friendId) {
-        Set<Long> userFilms = new HashSet<>(userService.findAllFilmLikes(userId));
-        Set<Long> friendFilms = new HashSet<>(userService.findAllFilmLikes(friendId));
-
-        return new ArrayList<>(userFilms.stream()
-                .filter(friendFilms::contains)
-                .map(filmRepository::getById)
-                .map(Optional::orElseThrow)
-                .sorted(Collections.reverseOrder(Comparator.comparing(o -> likeRepository.findAllFilmLikes(o.getId()).size())))
-                .toList());
-    }
 }
