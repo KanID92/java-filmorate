@@ -12,5 +12,4 @@ public interface GenreRepository {
     List<Genre> getAllFilmGenres(Long filmId);
 
     Genre getGenreById(Integer genreId);
-
 }

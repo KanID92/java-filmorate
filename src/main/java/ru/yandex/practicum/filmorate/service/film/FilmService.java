@@ -36,4 +36,6 @@ public interface FilmService {
     Collection<Film> getDirectorFilmsSorted(long directorId, String sortBy);
 
     void deleteFilm(long filmId);
+
+    List<Film> commonFilms(long userId, long friendId);
 }

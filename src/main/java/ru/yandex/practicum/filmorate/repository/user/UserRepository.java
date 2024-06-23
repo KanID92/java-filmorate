@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository {
 
@@ -21,4 +22,5 @@ public interface UserRepository {
 
     Collection<User> getCommonFriends(long userId1, long userId2);
 
+    Set<Long> getAllLikes(long userId);
 }

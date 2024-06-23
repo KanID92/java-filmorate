@@ -9,5 +9,4 @@ public interface FriendRepository {
     void delete(long userId, long friendId);
 
     Set<Long> getFriendsIds(long userId);
-
 }

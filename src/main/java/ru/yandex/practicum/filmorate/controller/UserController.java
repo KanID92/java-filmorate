@@ -3,16 +3,17 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
 
 
@@ -21,7 +22,7 @@ public class UserController {
         log.info("==> GET /users ");
         Collection<User> allUsers = userService.getAll();
         log.info("<== GET /users Список пользователей размером: "
-                + allUsers.size() + " возвращен");
+                 + allUsers.size() + " возвращен");
         return allUsers;
     }
 
@@ -47,7 +48,7 @@ public class UserController {
         log.info("==> GET /users/" + id + "/friends/common/" + otherId);
         Collection<User> usersCommonFriends = userService.getCommonFriends(id, otherId);
         log.info("<== GET /users/" + id + "/friends/common/" + otherId +
-                " Количество общих друзей: " + usersCommonFriends.size());
+                 " Количество общих друзей: " + usersCommonFriends.size());
         return usersCommonFriends;
     }
 
@@ -82,6 +83,16 @@ public class UserController {
         log.info("==> DELETE /users/" + id + "/friends/" + friendId);
         userService.deleteFriend(id, friendId);
         log.info("Удалена запись дружбы пользователя с id=" + id + " с пользователем с id=" + friendId);
+    }
+
+    @GetMapping("/users/{id}/recommendations")
+    public List<Film> recommendFilms(@PathVariable("id") long userId) {
+        return userService.recommendFilms(userId);
+    }
+
+    @GetMapping("/users/{id}/likes")
+    public List<Long> findAllFilmLikes(@PathVariable("id") long userId) {
+        return userService.findAllFilmLikes(userId);
     }
 
     @DeleteMapping("/users/{userId}")

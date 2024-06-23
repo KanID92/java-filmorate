@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.repository.genre.mapper;
 
-
 import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -15,5 +14,4 @@ public class GenreRowMapper implements RowMapper<Genre> {
         genre.setName(rs.getString("genre_name"));
         return genre;
     }
-
 }
