@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.MPARating;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.repository.feed.FeedRepository;
 import ru.yandex.practicum.filmorate.repository.film.FilmRepository;
 import ru.yandex.practicum.filmorate.repository.genre.GenreRepository;
 import ru.yandex.practicum.filmorate.repository.like.LikeRepository;
@@ -27,6 +26,7 @@ public class BaseFilmService implements FilmService {
     private final ValidationService validationService;
     private final MPARatingRepository mpaRatingRepository;
     private final DirectorService directorService;
+    private final FeedRepository feedRepository;
 
     @Override
     public Film getById(long filmId) {
@@ -65,6 +65,13 @@ public class BaseFilmService implements FilmService {
                 .orElseThrow(() -> new NotFoundException("Фильм с id=" + filmId + " не найден"));
         userService.getById(userId);
         likeRepository.add(userId, filmId);
+
+        Feed feed = new Feed();
+        feed.setEventType(EventType.LIKE);
+        feed.setOperation(EventOperation.ADD);
+        feed.setUserId(userId);
+        feed.setEntityId(filmId);
+        feedRepository.add(feed);
     }
 
     @Override
@@ -73,6 +80,13 @@ public class BaseFilmService implements FilmService {
                 .orElseThrow(() -> new NotFoundException("Фильм с id=" + filmId + " не найден"));
         userService.getById(userId);
         likeRepository.delete(userId, filmId);
+
+        Feed feed = new Feed();
+        feed.setEventType(EventType.LIKE);
+        feed.setOperation(EventOperation.REMOVE);
+        feed.setUserId(userId);
+        feed.setEntityId(filmId);
+        feedRepository.add(feed);
     }
 
     @Override
