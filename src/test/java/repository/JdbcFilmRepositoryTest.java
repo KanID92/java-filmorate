@@ -224,6 +224,52 @@ public class JdbcFilmRepositoryTest {
         }
     }
 
+    @Test
+    public void testSearchByDirector() {
+        String originalDirectorName = "Гай Ричи";
+        String query = "гАй";
+        Collection<Film> films = filmRepository.searchFilms(query, List.of("director"));
+
+        System.out.println(films);
+        assertTrue(1 <= films.size());
+        for (Film film : films) {
+            film.getDirectors().stream().map(Director::getName).forEach(name -> assertEquals(originalDirectorName, name));
+        }
+    }
+
+    @Test
+    public void testSearchByTitle() {
+        String originalFilmName = "Титаник";
+        String query = "тИТаН";
+        Collection<Film> films = filmRepository.searchFilms(query, List.of("title"));
+        assertTrue(1 <= films.size());
+        for (Film film : films) {
+            assertEquals(originalFilmName, film.getName());
+        }
+    }
+
+    @Test
+    public void testSearchByTitleAndDirector() {
+        String originalFilmName = "Загрузка: подлинная история интернета";
+        String originalDirectorName = "Оливье Накаш";
+        String query = "НА";
+        Collection<Film> films = filmRepository.searchFilms(query, List.of("title", "director"));
+        assertTrue(2 <= films.size());
+        for (Film film : films) {
+            assertTrue(originalFilmName.equals(film.getName()) ||
+                    (film.getDirectors().stream().map(Director::getName).toList().contains(originalDirectorName)));
+        }
+    }
+
+    @Test
+    public void testSearchEmptyQuery() {
+        String query = null;
+        List<String> criteria = null;
+        Collection<Film> foundFilms = filmRepository.searchFilms(query, criteria);
+        Collection<Film> allFilms = filmRepository.getAll();
+        assertEquals(allFilms.size(), foundFilms.size());
+    }
+
 
     public Film makeTestFilm(long id, String name, String description, LocalDate release,
                              int duration, LinkedHashSet<Genre> genres, MPARating rating,

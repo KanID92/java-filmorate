@@ -343,12 +343,62 @@ public class JdbcFilmRepository implements FilmRepository {
 
             directorsMap.computeIfAbsent(filmId, k -> new LinkedHashSet<>()).add(director);
         }
-
         return directorsMap;
     }
 
+    @Override
+    public Collection<Film> searchFilms(String query, List<String> criteria) {
+        boolean searchByDirector = false;
+        boolean searchByTitle = false;
+        if (criteria != null) {
+            for (String condition : criteria) {
+                if (condition.toLowerCase(Locale.ROOT).equals("director")) {
+                    searchByDirector = true;
+                }
+                if (condition.toLowerCase(Locale.ROOT).equals("title")) {
+                    searchByTitle = true;
+                }
+            }
+        }
+        String sqlQuery = makeSearchSqlQuery(query, searchByDirector, searchByTitle);
 
+        return setGenresAndDirectors(jdbs.query(sqlQuery, new FilmsExtractor()));
+    }
 
+    private static String makeSearchSqlQuery(String query, boolean searchByDirector, boolean searchByTitle) {
+        String queryClause = "'%" + query + "%' ";
+        String sqlWhereClause = " ";
+        if ((query != null) && (!query.isEmpty()) && (searchByDirector || searchByTitle)) {
+            String sqlWhereClauseDirector = "";
+            String sqlWhereClauseTitle = "";
+            String sqlOr = "";
+            if (searchByDirector) {
+                sqlWhereClauseDirector = "D.NAME ILIKE " + queryClause;
+            }
+            if (searchByTitle) {
+                sqlWhereClauseTitle = "F.NAME ILIKE " + queryClause;
+            }
+            if (searchByDirector && searchByTitle) {
+                sqlOr = "OR ";
+            }
+            sqlWhereClause = " WHERE " + sqlWhereClauseDirector + sqlOr + sqlWhereClauseTitle;
+        }
 
+        String sqlQuery =
+                """
+                SELECT F.*, MR.NAME
+                FROM FILMS AS F
+                LEFT JOIN LIKES AS L ON F.FILM_ID = L.FILM_ID
+                LEFT JOIN MPA_RATING AS mr ON f.mpa_rating_id = mr.mpa_rating_id
+                LEFT JOIN FILM_DIRECTOR FD on f.FILM_ID = FD.FILM_ID
+                LEFT JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID
+                """ +
+                sqlWhereClause +
+                """
+                GROUP BY F.FILM_ID
+                ORDER BY COUNT(l.film_id) DESC
+                """;
+        return sqlQuery;
+    }
 }
 

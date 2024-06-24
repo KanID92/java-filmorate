@@ -97,6 +97,13 @@ public class FilmController {
         return filmService.commonFilms(userId, friendId);
     }
 
+    @GetMapping("/films/search")
+    public Collection<Film> searchFilms(
+            @RequestParam (required = false) String query,
+            @RequestParam (name = "by", required = false) List<String> criteria) {
+        return filmService.searchFilms(query, criteria);
+    }
+
     //========================/POST/==============================//
 
     @PostMapping("/films")
