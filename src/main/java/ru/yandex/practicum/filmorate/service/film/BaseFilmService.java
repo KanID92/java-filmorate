@@ -146,4 +146,9 @@ public class BaseFilmService implements FilmService {
                 .sorted(Collections.reverseOrder(Comparator.comparing(o -> likeRepository.findAllFilmLikes(o.getId()).size())))
                 .toList());
     }
+
+    @Override
+    public Collection<Film> searchFilms(String query, List<String> criteria) {
+        return filmRepository.searchFilms(query, criteria);
+    }
 }

@@ -38,4 +38,6 @@ public interface FilmService {
     void deleteFilm(long filmId);
 
     List<Film> commonFilms(long userId, long friendId);
+
+    Collection<Film> searchFilms(String query, List<String> criteria);
 }
