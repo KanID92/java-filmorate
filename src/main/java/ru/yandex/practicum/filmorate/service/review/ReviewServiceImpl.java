@@ -45,7 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
         validationService.validateNewData(review);
         checkUser(review.getUserId());
         checkUser(review.getFilmId());
-        reviewRepository.update(review);
+        Review update = reviewRepository.update(review);
 
         Feed feed = new Feed();
         feed.setEventType(EventType.REVIEW);
@@ -53,7 +53,7 @@ public class ReviewServiceImpl implements ReviewService {
         feed.setUserId(review.getUserId());
         feed.setEntityId(review.getId());
         feedRepository.add(feed);
-        return review;
+        return update;
     }
 
     @Override

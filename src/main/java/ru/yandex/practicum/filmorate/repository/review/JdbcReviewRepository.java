@@ -36,15 +36,15 @@ public class JdbcReviewRepository implements ReviewRepository {
     @Override
     public Review update(Review review) {
         String sql = "UPDATE REVIEWS SET content=:content, " +
-                     "is_positive=:isPositive, " +
-                     "user_id=:userId, " +
-                     "film_id=:filmId " +
+                     "is_positive=:isPositive " +
                      "WHERE review_id=:id";
         int countRow = jdbc.update(sql, getParams(review));
         if (countRow != 1) {
             throw new NotFoundException("Review not found");
         }
-        return review;
+        Optional<Review> updateOptional = getById(review.getId());
+
+        return updateOptional.orElseThrow(()->new NotFoundException("Review not found"));
     }
 
     @Override

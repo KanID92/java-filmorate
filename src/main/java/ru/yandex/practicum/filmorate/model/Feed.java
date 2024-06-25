@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,6 +10,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(of = "id")
 public class Feed {
+    @JsonProperty("eventId")
     private long id;
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Date timestamp;

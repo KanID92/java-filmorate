@@ -18,7 +18,9 @@ import java.util.*;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class JdbcUserRepository implements UserRepository {
+public class
+
+JdbcUserRepository implements UserRepository {
 
 
     private final NamedParameterJdbcOperations jdbc;
@@ -38,7 +40,7 @@ public class JdbcUserRepository implements UserRepository {
     public Collection<User> getFriendsByID(Long userId) {
         final String sql1 = "SELECT * FROM USERS, FRIENDS WHERE USERS.USER_ID = :userId " +
                             "AND FRIENDS.USER_ID = :userId";
-        final String sql = "SELECT * FROM USERS WHERE USER_ID = " +
+        final String sql = "SELECT * FROM USERS WHERE USER_ID in " +
                            "(SELECT FRIEND_ID FROM FRIENDS WHERE USER_ID = :userId)";
         return jdbc.query(sql, Map.of("userId", userId), new UserRowMapper());
     }
