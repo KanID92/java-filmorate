@@ -16,6 +16,8 @@ public class DirectorController {
 
     private final DirectorService directorService;
 
+    //=========================/GET/===========================//
+
     @GetMapping("/directors")
     public Collection<Director> getAll() {
         log.info("==> GET /directors ");

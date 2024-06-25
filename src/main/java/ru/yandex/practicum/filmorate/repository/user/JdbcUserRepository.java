@@ -91,7 +91,7 @@ JdbcUserRepository implements UserRepository {
                 "birthday", user.getBirthday()));
         Optional<User> userFromDb = getById(user.getId());
         if (userFromDb.isPresent()) {
-            userFromDb.get().setFrindsSet(
+            userFromDb.get().setFriendsSet(
                     friendsRepository.getFriendsIds(user.getId()));
             return userFromDb.get();
         } else {

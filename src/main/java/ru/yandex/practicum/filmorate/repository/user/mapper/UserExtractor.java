@@ -31,7 +31,7 @@ public class UserExtractor implements ResultSetExtractor<User> {
             friendsIds.add(rs.getLong("FRIENDS.friend_id"));
         }
         if (friendsIds.size() > 0) {
-            user.setFrindsSet(friendsIds);
+            user.setFriendsSet(friendsIds);
         }
         return user;
     }

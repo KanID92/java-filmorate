@@ -116,6 +116,7 @@ public class BaseFilmService implements FilmService {
 
     @Override
     public Collection<Film> getDirectorFilmsSorted(long directorId, String sortBy) {
+        directorService.getById(directorId);
         return filmRepository.getSortedFilmsByDirector(directorId, sortBy);
     }
 

@@ -155,7 +155,7 @@ class JdbcUserRepositoryTest {
         user.setLogin(testUser1Login);
         user.setName(testUser1Name);
         user.setBirthday(testUser1Birthday);
-        user.setFrindsSet(testUser1FriendsSet);
+        user.setFriendsSet(testUser1FriendsSet);
         return user;
     }
 
@@ -166,7 +166,7 @@ class JdbcUserRepositoryTest {
         user.setLogin(testUser2Login);
         user.setName(testUser2Name);
         user.setBirthday(testUser2Birthday);
-        user.setFrindsSet(testUser2FriendsSet);
+        user.setFriendsSet(testUser2FriendsSet);
         return user;
     }
 
@@ -177,7 +177,7 @@ class JdbcUserRepositoryTest {
         user.setLogin(testUser3Login);
         user.setName(testUser3Name);
         user.setBirthday(testUser3Birthday);
-        user.setFrindsSet(testUser3FriendsSet);
+        user.setFriendsSet(testUser3FriendsSet);
         return user;
     }
 

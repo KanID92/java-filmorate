@@ -101,6 +101,7 @@ public class JdbcFilmRepository implements FilmRepository {
             jdbs.update(sqlDeleteGenresBond, Map.of("filmId", film.getId()));
 
             createFilmGenresBond(film);
+            createFilmDirectorsBond(film);
 
             return film;
 
@@ -204,8 +205,6 @@ public class JdbcFilmRepository implements FilmRepository {
                 "WHERE fd.DIRECTOR_ID = :directorId " +
                 "ORDER BY LIKESC DESC ";
 
-
-        log.info("Films sorted by " + sortBy);
         switch (sortBy) {
             case "year":
                 log.info("Вариант сортировки по году:  " + sortBy);
@@ -224,7 +223,7 @@ public class JdbcFilmRepository implements FilmRepository {
                 return setGenresAndDirectors(directorFilmsByLikes);
 
             default:
-                log.info("вариант сортировки дефотл:  " + sortBy);
+                log.info("вариант сортировки default:  " + sortBy);
                 throw new ValidationException("Неверный параметр запроса: " + sortBy);
         }
     }
@@ -241,6 +240,9 @@ public class JdbcFilmRepository implements FilmRepository {
     }
 
     private void createFilmGenresBond(Film film) {
+        String sqlDel = "DELETE FROM FILM_GENRE WHERE FILM_ID = :filmId";
+        jdbs.update(sqlDel, Map.of("filmId", film.getId()));
+
         if (film.getGenres() != null) {
 
             String sql = "Select genre_id from genres";
@@ -269,6 +271,9 @@ public class JdbcFilmRepository implements FilmRepository {
 
 
     private void createFilmDirectorsBond(Film film) {
+        String sqlDel = "DELETE FROM FILM_DIRECTOR WHERE FILM_ID = :filmId";
+        jdbs.update(sqlDel, Map.of("filmId", film.getId()));
+
         if (film.getDirectors() != null) {
             String sql = "Select director_id from directors";
             List<Long> directorsFromDb = jdbs.queryForList(sql, new HashMap<>(), Long.class);
