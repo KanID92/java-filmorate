@@ -44,14 +44,14 @@ public class ReviewServiceImpl implements ReviewService {
     public Review update(Review review) {
         validationService.validateNewData(review);
         checkUser(review.getUserId());
-        checkUser(review.getFilmId());
+        checkFim(review.getFilmId());
         Review update = reviewRepository.update(review);
 
         Feed feed = new Feed();
         feed.setEventType(EventType.REVIEW);
         feed.setOperation(EventOperation.UPDATE);
-        feed.setUserId(review.getUserId());
-        feed.setEntityId(review.getId());
+        feed.setUserId(update.getUserId());
+        feed.setEntityId(update.getId());
         feedRepository.add(feed);
         return update;
     }

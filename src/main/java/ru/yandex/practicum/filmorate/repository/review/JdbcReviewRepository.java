@@ -44,7 +44,7 @@ public class JdbcReviewRepository implements ReviewRepository {
         }
         Optional<Review> updateOptional = getById(review.getId());
 
-        return updateOptional.orElseThrow(()->new NotFoundException("Review not found"));
+        return updateOptional.orElseThrow(() -> new NotFoundException("Review not found"));
     }
 
     @Override
