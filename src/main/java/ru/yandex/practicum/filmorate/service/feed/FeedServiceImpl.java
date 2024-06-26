@@ -14,10 +14,11 @@ import java.util.Collection;
 public class FeedServiceImpl implements FeedService {
     private final FeedRepository feedRepository;
     private final UserRepository userRepository;
+
     @Override
     public Collection<Feed> getFeeds(long userId) {
-        userRepository.getById(userId).orElseThrow(()->
-                new NotFoundException("Not found feeds by user. User with id "+ userId + " not found"));
+        userRepository.getById(userId).orElseThrow(() ->
+                new NotFoundException("Not found feeds by user. User with id " + userId + " not found"));
         return feedRepository.getAllByUser(userId);
     }
 }
