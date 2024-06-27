@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class JdbcReviewRepositoryTest {
     private final JdbcReviewRepository reviewRepository;
-    private final ReviewRowMapper reviewRowMapper;
 
     private static final Long TEST_REVIEW_01_ID = 1L;
     private static final Long TEST_REVIEW_02_ID = 2L;
@@ -101,7 +100,7 @@ class JdbcReviewRepositoryTest {
         Review review = getReview();
         review.setId(TEST_REVIEW_01_ID);
         review.setUseful(4);
-        reviewRepository.addLike(TEST_REVIEW_01_ID, review.getUserId());
+        reviewRepository.addLikeOrDisLike(TEST_REVIEW_01_ID, review.getUserId(), true);
         Optional<Review> optionalReview = reviewRepository.getById(TEST_REVIEW_01_ID);
         assertThat(optionalReview)
                 .isPresent()
@@ -115,7 +114,7 @@ class JdbcReviewRepositoryTest {
         Review review = getReview();
         review.setId(TEST_REVIEW_01_ID);
         review.setUseful(2);
-        reviewRepository.addDislike(TEST_REVIEW_01_ID, 1L);
+        reviewRepository.addLikeOrDisLike(TEST_REVIEW_01_ID, 1L, false);
         Optional<Review> optionalReview = reviewRepository.getById(TEST_REVIEW_01_ID);
         assertThat(optionalReview)
                 .isPresent()
@@ -125,11 +124,11 @@ class JdbcReviewRepositoryTest {
     }
 
     @Test
-    void removeLike() {
+    void removeLikeOrDislike() {
         Review review = getReview();
         review.setId(TEST_REVIEW_01_ID);
         review.setUseful(2);
-        reviewRepository.removeLike(TEST_REVIEW_01_ID, 3L);
+        reviewRepository.removeLikeOrDislike(TEST_REVIEW_01_ID, 3L);
         Optional<Review> optionalReview = reviewRepository.getById(TEST_REVIEW_01_ID);
         assertThat(optionalReview)
                 .isPresent()

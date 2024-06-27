@@ -13,16 +13,6 @@ VALUES ('Комедия'),
        ('Документальный'),
        ('Боевик');
 
-INSERT INTO EVENT_TYPES (NAME)
-VALUES ('LIKE'),
-       ('REVIEW'),
-       ('FRIEND');
-
-INSERT INTO EVENT_OPERATIONS (NAME)
-VALUES ('REMOVE'),
-       ('ADD'),
-       ('UPDATE');
-
 
 
 

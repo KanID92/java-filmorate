@@ -18,11 +18,8 @@ public interface ReviewRepository {
 
     List<Review> getByFilmLimit(int count);
 
-    void addLike(Long id, Long userId);
+    void addLikeOrDisLike(Long id, Long userId, boolean like);
 
-    void addDislike(Long id, Long userId);
+    void removeLikeOrDislike(Long id, Long userId);
 
-    void removeLike(Long id, Long userId);
-
-    void removeDislike(Long id, Long userId);
 }

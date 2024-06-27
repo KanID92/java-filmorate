@@ -97,15 +97,7 @@ VALUES (1, 1),
        (3, 4),
        (3, 5),
        (4, 6);
-INSERT INTO EVENT_TYPES (NAME)
-VALUES ('LIKE'),
-       ('REVIEW'),
-       ('FRIEND');
 
-INSERT INTO EVENT_OPERATIONS (NAME)
-VALUES ('REMOVE'),
-       ('ADD'),
-       ('UPDATE');
 INSERT INTO FEEDS (USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID)
-VALUES (1,1,2,1 ),
-       (1,3,2,2);
+VALUES (1,'LIKE','ADD',1 ),
+       (1,'FRIEND','ADD',2);

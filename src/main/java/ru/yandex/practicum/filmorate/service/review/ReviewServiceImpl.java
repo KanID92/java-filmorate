@@ -85,27 +85,16 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void addLike(Long id, Long userId) {
+    public void addLikeOrDislike(Long id, Long userId, boolean like) {
         checkUser(userId);
-        reviewRepository.addLike(id, userId);
+        reviewRepository.addLikeOrDisLike(id, userId, like);
     }
 
-    @Override
-    public void addDislike(Long id, Long userId) {
-        checkUser(userId);
-        reviewRepository.addDislike(id, userId);
-    }
 
     @Override
-    public void removeLike(Long id, Long userId) {
+    public void removeLikeOrDislike(Long id, Long userId) {
         checkUser(userId);
-        reviewRepository.removeLike(id, userId);
-    }
-
-    @Override
-    public void removeDislike(Long id, Long userId) {
-        checkUser(userId);
-        reviewRepository.removeDislike(id, userId);
+        reviewRepository.removeLikeOrDislike(id, userId);
     }
 
     private void checkUser(Long userId) {

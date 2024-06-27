@@ -20,8 +20,6 @@ public class JdbcFeedRepository implements FeedRepository {
     @Override
     public Collection<Feed> getAllByUser(long userId) {
         String sql = "SELECT * FROM FEEDS " +
-                "LEFT JOIN PUBLIC.EVENT_TYPES ET on ET.TYPES_ID = FEEDS.EVENT_TYPE " +
-                "LEFT JOIN PUBLIC.EVENT_OPERATIONS EO on EO.OPERATION_ID = FEEDS.OPERATION " +
                 "WHERE USER_ID = :userId";
         log.info("==> Get /feed Запрос ленты новосте юзера {} ", userId);
         return jdbc.query(sql, Map.of("userId", userId), feedRowMapper);
@@ -30,10 +28,7 @@ public class JdbcFeedRepository implements FeedRepository {
     @Override
     public void add(Feed feed) {
         String sql = "INSERT INTO FEEDS (USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID) " +
-                "VALUES (:userId, " +
-                "(SELECT TYPES_ID FROM EVENT_TYPES WHERE EVENT_TYPES.NAME = :eventType), " +
-                "(SELECT EVENT_OPERATIONS.OPERATION_ID FROM EVENT_OPERATIONS WHERE EVENT_OPERATIONS.NAME = :operation), " +
-                ":entityId)";
+                "VALUES (:userId, :eventType, :operation, :entityId)";
         Map<String, Object> params = Map.of("userId", feed.getUserId(),
                 "eventType", feed.getEventType().toString(),
                 "operation", feed.getOperation().toString(),

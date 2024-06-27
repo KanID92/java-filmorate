@@ -390,18 +390,18 @@ public class JdbcFilmRepository implements FilmRepository {
 
         String sqlQuery =
                 """
-                SELECT F.*, MR.NAME
-                FROM FILMS AS F
-                LEFT JOIN LIKES AS L ON F.FILM_ID = L.FILM_ID
-                LEFT JOIN MPA_RATING AS mr ON f.mpa_rating_id = mr.mpa_rating_id
-                LEFT JOIN FILM_DIRECTOR FD on f.FILM_ID = FD.FILM_ID
-                LEFT JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID
-                """ +
-                sqlWhereClause +
-                """
-                GROUP BY F.FILM_ID
-                ORDER BY COUNT(l.film_id) DESC
-                """;
+                        SELECT F.*, MR.NAME
+                        FROM FILMS AS F
+                        LEFT JOIN LIKES AS L ON F.FILM_ID = L.FILM_ID
+                        LEFT JOIN MPA_RATING AS mr ON f.mpa_rating_id = mr.mpa_rating_id
+                        LEFT JOIN FILM_DIRECTOR FD on f.FILM_ID = FD.FILM_ID
+                        LEFT JOIN DIRECTORS D on D.DIRECTOR_ID = FD.DIRECTOR_ID
+                        """ +
+                        sqlWhereClause +
+                        """
+                                GROUP BY F.FILM_ID
+                                ORDER BY COUNT(l.film_id) DESC
+                                """;
         return sqlQuery;
     }
 }
