@@ -16,7 +16,7 @@ public class JdbcFriendRepository implements FriendRepository {
     @Override
     public void add(long userId, long friendId) {
         String sql = "INSERT INTO friends (user_id, friend_id) " +
-                     "VALUES (:userId, :friendId)";
+                "VALUES (:userId, :friendId)";
         jdbcFr.update(sql, Map.of("userId", userId,
                 "friendId", friendId));
     }
@@ -24,7 +24,7 @@ public class JdbcFriendRepository implements FriendRepository {
     @Override
     public void delete(long userId, long friendId) {
         String sql = "DELETE FROM FRIENDS " +
-                     "WHERE (user_id = :userId AND friend_id= :friendId)";
+                "WHERE (user_id = :userId AND friend_id= :friendId)";
         jdbcFr.update(sql, Map.of(
                 "userId", userId,
                 "friendId", friendId));
@@ -34,7 +34,7 @@ public class JdbcFriendRepository implements FriendRepository {
     public Set<Long> getFriendsIds(long userId) {
         String sql1 =
                 "SELECT friend_id FROM friends " +
-                "WHERE user_id = :userId";
+                        "WHERE user_id = :userId";
         return new HashSet<>(jdbcFr.queryForList(sql1, Map.of(
                 "userId", userId), Long.class));
     }

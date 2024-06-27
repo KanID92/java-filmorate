@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.feed.FeedService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
@@ -24,7 +24,7 @@ public class UserController {
         log.info("==> GET /users ");
         Collection<User> allUsers = userService.getAll();
         log.info("<== GET /users Список пользователей размером: "
-                 + allUsers.size() + " возвращен");
+                + allUsers.size() + " возвращен");
         return allUsers;
     }
 
@@ -50,7 +50,7 @@ public class UserController {
         log.info("==> GET /users/" + id + "/friends/common/" + otherId);
         Collection<User> usersCommonFriends = userService.getCommonFriends(id, otherId);
         log.info("<== GET /users/" + id + "/friends/common/" + otherId +
-                 " Количество общих друзей: " + usersCommonFriends.size());
+                " Количество общих друзей: " + usersCommonFriends.size());
         return usersCommonFriends;
     }
 

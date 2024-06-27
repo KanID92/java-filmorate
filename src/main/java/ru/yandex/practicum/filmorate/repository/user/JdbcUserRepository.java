@@ -29,8 +29,8 @@ JdbcUserRepository implements UserRepository {
     @Override
     public Optional<User> getById(long userId) {
         final String sql1 = "SELECT * FROM USERS " +
-                            "LEFT JOIN FRIENDS ON USERS.USER_ID = FRIENDS.USER_ID " +
-                            "WHERE USERS.USER_ID = :userId";
+                "LEFT JOIN FRIENDS ON USERS.USER_ID = FRIENDS.USER_ID " +
+                "WHERE USERS.USER_ID = :userId";
         User user = jdbc.query(sql1, Map.of("userId", userId), new UserExtractor());
         System.out.println("Возврат репозитория: " + user);
         return Optional.ofNullable(user);
@@ -39,9 +39,9 @@ JdbcUserRepository implements UserRepository {
     @Override
     public Collection<User> getFriendsByID(Long userId) {
         final String sql1 = "SELECT * FROM USERS, FRIENDS WHERE USERS.USER_ID = :userId " +
-                            "AND FRIENDS.USER_ID = :userId";
+                "AND FRIENDS.USER_ID = :userId";
         final String sql = "SELECT * FROM USERS WHERE USER_ID in " +
-                           "(SELECT FRIEND_ID FROM FRIENDS WHERE USER_ID = :userId)";
+                "(SELECT FRIEND_ID FROM FRIENDS WHERE USER_ID = :userId)";
         return jdbc.query(sql, Map.of("userId", userId), new UserRowMapper());
     }
 
@@ -49,7 +49,7 @@ JdbcUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         final String sql = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) " +
-                           "VALUES (:email, :login, :name, :birthday)";
+                "VALUES (:email, :login, :name, :birthday)";
 
         GeneratedKeyHolder keyHolderUser = new GeneratedKeyHolder();
         SqlParameterSource params = new MapSqlParameterSource()
@@ -80,10 +80,10 @@ JdbcUserRepository implements UserRepository {
     @Override
     public User update(User user) {
         final String sqlUpdate = "UPDATE USERS " +
-                                 "SET EMAIL = :email, " +
-                                 "LOGIN = :login, NAME = :username, " +
-                                 "BIRTHDAY = :birthday " +
-                                 "WHERE USER_ID = :userId";
+                "SET EMAIL = :email, " +
+                "LOGIN = :login, NAME = :username, " +
+                "BIRTHDAY = :birthday " +
+                "WHERE USER_ID = :userId";
         jdbc.update(sqlUpdate, Map.of("userId", user.getId(),
                 "email", user.getEmail(),
                 "login", user.getLogin(),
@@ -105,9 +105,9 @@ JdbcUserRepository implements UserRepository {
 //        final String sql = "SELECT * FROM USERS u, FRIENDS f, FRIENDS o "
 //                           + "WHERE u.USER_ID = f.FRIEND_ID AND u.USER_ID = o.FRIEND_ID AND f.USER_ID = :userId AND o.USER_ID = :userId";
         final String sql1 = "SELECT * from USERS AS u WHERE USER_ID IN " +
-                            "(SELECT FRIEND_ID FROM USERS AS u JOIN FRIENDS AS f ON u.USER_ID = f.USER_ID WHERE u.USER_ID = :userId1)" +
-                            "AND USER_ID IN " +
-                            "(SELECT FRIEND_ID FROM USERS AS u JOIN FRIENDS AS f ON u.USER_ID = f.USER_ID WHERE u.USER_ID = :userId2)";
+                "(SELECT FRIEND_ID FROM USERS AS u JOIN FRIENDS AS f ON u.USER_ID = f.USER_ID WHERE u.USER_ID = :userId1)" +
+                "AND USER_ID IN " +
+                "(SELECT FRIEND_ID FROM USERS AS u JOIN FRIENDS AS f ON u.USER_ID = f.USER_ID WHERE u.USER_ID = :userId2)";
         return jdbc.query(sql1, Map.of("userId1", userId1, "userId2", userId2), new UserRowMapper());
     }
 

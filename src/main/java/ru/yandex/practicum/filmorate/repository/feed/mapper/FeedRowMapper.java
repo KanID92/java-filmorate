@@ -16,8 +16,8 @@ public class FeedRowMapper implements RowMapper<Feed> {
         Feed feed = new Feed();
         feed.setId(rs.getInt("event_id"));
         feed.setTimestamp(rs.getDate("timestamp"));
-        feed.setEventType(EventType.valueOf(rs.getString("EVENT_TYPES.name")));
-        feed.setOperation(EventOperation.valueOf(rs.getString("EVENT_OPERATIONS.name")));
+        feed.setEventType(EventType.valueOf(rs.getString("event_type")));
+        feed.setOperation(EventOperation.valueOf(rs.getString("operation")));
         feed.setUserId(rs.getInt("user_id"));
         feed.setEntityId(rs.getInt("entity_id"));
         return feed;

@@ -25,7 +25,7 @@ public class JdbcReviewRepository implements ReviewRepository {
     public Review create(Review review) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO REVIEWS (content, is_positive, user_id, film_id)" +
-                     " VALUES (:content, :isPositive, :userId, :filmId)";
+                " VALUES (:content, :isPositive, :userId, :filmId)";
         jdbc.update(sql, getParams(review), keyHolder);
         if (keyHolder.getKey() != null) {
             review.setId(keyHolder.getKey().intValue());
@@ -36,8 +36,8 @@ public class JdbcReviewRepository implements ReviewRepository {
     @Override
     public Review update(Review review) {
         String sql = "UPDATE REVIEWS SET content=:content, " +
-                     "is_positive=:isPositive " +
-                     "WHERE review_id=:id";
+                "is_positive=:isPositive " +
+                "WHERE review_id=:id";
         int countRow = jdbc.update(sql, getParams(review));
         if (countRow != 1) {
             throw new NotFoundException("Review not found");
@@ -56,11 +56,11 @@ public class JdbcReviewRepository implements ReviewRepository {
     @Override
     public Optional<Review> getById(Long id) {
         String sql = "select REVIEWS.REVIEW_ID,REVIEWS.CONTENT,REVIEWS.IS_POSITIVE,REVIEWS.USER_ID,REVIEWS.FILM_ID, " +
-                     "       COALESCE(sum(RL.SCORE),0) useful " +
-                     "from REVIEWS " +
-                     "left join PUBLIC.REVIEWS_LIKES RL on REVIEWS.REVIEW_ID = RL.REVIEW_ID " +
-                     "where REVIEWS.REVIEW_ID=:id " +
-                     "group by REVIEWS.REVIEW_ID";
+                "       COALESCE(sum(RL.SCORE),0) useful " +
+                "from REVIEWS " +
+                "left join PUBLIC.REVIEWS_LIKES RL on REVIEWS.REVIEW_ID = RL.REVIEW_ID " +
+                "where REVIEWS.REVIEW_ID=:id " +
+                "group by REVIEWS.REVIEW_ID";
         try {
             Review result = jdbc.queryForObject(sql, Map.of("id", id), reviewRowMapper);
             return Optional.ofNullable(result);
@@ -72,49 +72,45 @@ public class JdbcReviewRepository implements ReviewRepository {
     @Override
     public List<Review> getByFilmLimit(Long filmId, int count) {
         String sql = "select REVIEWS.REVIEW_ID,REVIEWS.CONTENT,REVIEWS.IS_POSITIVE,REVIEWS.USER_ID,REVIEWS.FILM_ID, " +
-                     "       COALESCE(sum(RL.SCORE),0) useful " +
-                     "from REVIEWS " +
-                     "left join PUBLIC.REVIEWS_LIKES RL on REVIEWS.REVIEW_ID = RL.REVIEW_ID " +
-                     "WHERE film_id = :filmId " +
-                     "group by REVIEWS.REVIEW_ID " +
-                     "ORDER BY useful DESC " +
-                     "LIMIT :count";
+                "       COALESCE(sum(RL.SCORE),0) useful " +
+                "from REVIEWS " +
+                "left join PUBLIC.REVIEWS_LIKES RL on REVIEWS.REVIEW_ID = RL.REVIEW_ID " +
+                "WHERE film_id = :filmId " +
+                "group by REVIEWS.REVIEW_ID " +
+                "ORDER BY useful DESC " +
+                "LIMIT :count";
         return jdbc.query(sql, Map.of("filmId", filmId, "count", count), reviewRowMapper);
     }
 
     @Override
     public List<Review> getByFilmLimit(int count) {
         String sql = "select REVIEWS.REVIEW_ID,REVIEWS.CONTENT,REVIEWS.IS_POSITIVE,REVIEWS.USER_ID,REVIEWS.FILM_ID, " +
-                     "       COALESCE(sum(RL.SCORE),0) useful " +
-                     "from REVIEWS " +
-                     "left join PUBLIC.REVIEWS_LIKES RL on REVIEWS.REVIEW_ID = RL.REVIEW_ID " +
-                     "group by REVIEWS.REVIEW_ID " +
-                     "ORDER BY useful DESC " +
-                     "LIMIT :count";
+                "       COALESCE(sum(RL.SCORE),0) useful " +
+                "from REVIEWS " +
+                "left join PUBLIC.REVIEWS_LIKES RL on REVIEWS.REVIEW_ID = RL.REVIEW_ID " +
+                "group by REVIEWS.REVIEW_ID " +
+                "ORDER BY useful DESC " +
+                "LIMIT :count";
         return jdbc.query(sql, Map.of("count", count), reviewRowMapper);
     }
 
     @Override
-    public void addLike(Long id, Long userId) {
-        String sql = "MERGE INTO REVIEWS_LIKES (REVIEW_ID, USER_ID, SCORE) VALUES ( :id,:userId,1 )";
-        jdbc.update(sql, Map.of("id", id, "userId", userId));
+    public void addLikeOrDisLike(Long id, Long userId, boolean like) {
+        int score;
+        if (like) {
+            score = 1;
+        } else {
+            score = -1;
+        }
+        String sql = "MERGE INTO REVIEWS_LIKES (REVIEW_ID, USER_ID, SCORE) VALUES ( :id,:userId,:score )";
+        jdbc.update(sql, Map.of("id", id, "userId", userId, "score", score));
     }
 
-    @Override
-    public void addDislike(Long id, Long userId) {
-        String sql = "MERGE INTO REVIEWS_LIKES (REVIEW_ID, USER_ID, SCORE) VALUES ( :id,:userId,-1 )";
-        jdbc.update(sql, Map.of("id", id, "userId", userId));
-    }
 
     @Override
-    public void removeLike(Long id, Long userId) {
+    public void removeLikeOrDislike(Long id, Long userId) {
         String sql = "DELETE FROM REVIEWS_LIKES WHERE REVIEW_ID = :id AND USER_ID = :userId";
         jdbc.update(sql, Map.of("id", id, "userId", userId));
-    }
-
-    @Override
-    public void removeDislike(Long id, Long userId) {
-        removeLike(id, userId);
     }
 
     private SqlParameterSource getParams(Review review) {

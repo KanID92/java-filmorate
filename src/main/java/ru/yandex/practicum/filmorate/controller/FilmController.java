@@ -42,7 +42,7 @@ public class FilmController {
         log.info("==> GET /films ");
         Collection<Film> allFilms = filmService.getAll();
         log.info("<== GET /films Список всех сохраненных фильмов размером: "
-                 + allFilms.size() + " возвращен");
+                + allFilms.size() + " возвращен");
         return allFilms;
     }
 
@@ -54,7 +54,7 @@ public class FilmController {
         log.info("==> GET /films/popular?count=" + count + "&" + "genreId=" + genreId + "&" + "year=" + year);
         Collection<Film> mostLikedFilms = filmService.getMostLikedFilms(count, genreId, year);
         log.info("<== GET /films/popular?count="
-                 + "Самые популярные фильмы в количестве: " + mostLikedFilms.size());
+                + "Самые популярные фильмы в количестве: " + mostLikedFilms.size());
         return mostLikedFilms;
     }
 
@@ -63,7 +63,7 @@ public class FilmController {
         log.info("==> GET /genres");
         Collection<Genre> allGenres = filmService.getAllGenres();
         log.info("<== GET /genres"
-                 + "Список жанров в количестве: " + allGenres.size());
+                + "Список жанров в количестве: " + allGenres.size());
         return allGenres;
     }
 
@@ -80,7 +80,7 @@ public class FilmController {
         log.info("==> GET /mpa");
         Collection<MPARating> mpaRating = filmService.getAllMPARatings();
         log.info("<== GET /mpa"
-                 + "Список рейтингов MPA в количестве: " + mpaRating.size());
+                + "Список рейтингов MPA в количестве: " + mpaRating.size());
         return mpaRating;
     }
 
@@ -89,7 +89,7 @@ public class FilmController {
         log.info("==> GET /mpa/" + id);
         MPARating mpaRating = filmService.getMPARatingById(id);
         log.info("<== GET /mpa/" + id
-                 + " Рейтинг c id = " + id + " : " + mpaRating.getName());
+                + " Рейтинг c id = " + id + " : " + mpaRating.getName());
         return mpaRating;
     }
 
@@ -100,8 +100,8 @@ public class FilmController {
 
     @GetMapping("/films/search")
     public Collection<Film> searchFilms(
-            @RequestParam (required = false) String query,
-            @RequestParam (name = "by", required = false) List<String> criteria) {
+            @RequestParam(required = false) String query,
+            @RequestParam(name = "by", required = false) List<String> criteria) {
         return filmService.searchFilms(query, criteria);
     }
 
@@ -130,7 +130,7 @@ public class FilmController {
         log.info("==> PUT /films/" + id + "/like/" + userId);
         filmService.addLike(id, userId);
         log.info("<== PUT /films/" + id + "/like/" + userId + "  Лайк фильму " + filmService.getById(id).getName()
-                 + " от пользователя с ID=" + userId + " поставлен");
+                + " от пользователя с ID=" + userId + " поставлен");
     }
 
     //========================/DELETE/==============================//
@@ -140,7 +140,7 @@ public class FilmController {
         log.info("==> DELETE /films/" + id + "/like/" + userId);
         filmService.deleteLike(id, userId);
         log.info("<== DELETE /films/" + id + "/like/" + userId + "  Лайк фильму " + filmService.getById(id)
-                 + " от пользователя с ID=" + userId + " удален");
+                + " от пользователя с ID=" + userId + " удален");
     }
 
     @DeleteMapping("/films/{filmId}")

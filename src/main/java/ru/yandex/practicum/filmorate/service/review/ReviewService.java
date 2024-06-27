@@ -17,11 +17,8 @@ public interface ReviewService {
 
     List<Review> getAll(int count);
 
-    void addLike(Long id, Long userId);
+    void addLikeOrDislike(Long id, Long userId, boolean like);
 
-    void addDislike(Long id, Long userId);
+    void removeLikeOrDislike(Long id, Long userId);
 
-    void removeLike(Long id, Long userId);
-
-    void removeDislike(Long id, Long userId);
 }
