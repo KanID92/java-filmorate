@@ -269,7 +269,6 @@ public class JdbcFilmRepository implements FilmRepository {
         }
     }
 
-
     private void createFilmDirectorsBond(Film film) {
         String sqlDel = "DELETE FROM FILM_DIRECTOR WHERE FILM_ID = :filmId";
         jdbs.update(sqlDel, Map.of("filmId", film.getId()));
