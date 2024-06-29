@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -27,6 +28,15 @@ public class FilmController {
         return film;
     }
 
+    @GetMapping("/films/director/{directorId}")
+    public Collection<Film> getDirectorFilmsSorted(@PathVariable long directorId, @RequestParam String sortBy) {
+        log.info("==> GET /films/director/" + directorId + "  sortBy: " + sortBy);
+        Collection<Film> sortedFilms = filmService.getDirectorFilmsSorted(directorId, sortBy);
+        log.info("<== GET /films/director/" + directorId + "  sortBy: " + sortBy + " Размер возвращенного " +
+                "отсортированного списка фильмов режисера: " + sortedFilms.size());
+        return sortedFilms;
+    }
+
     @GetMapping("/films")
     public Collection<Film> getAll() {
         log.info("==> GET /films ");
@@ -37,9 +47,12 @@ public class FilmController {
     }
 
     @GetMapping("/films/popular")
-    public Collection<Film> getMostLikedFilms(@RequestParam long count) {
-        log.info("==> GET /films/popular?count=" + count);
-        Collection<Film> mostLikedFilms = filmService.getMostLikedFilms(count);
+    public Collection<Film> getMostLikedFilms(
+            @RequestParam(name = "count", required = false) Long count,
+            @RequestParam(name = "genreId", required = false) Integer genreId,
+            @RequestParam(name = "year", required = false) Integer year) {
+        log.info("==> GET /films/popular?count=" + count + "&" + "genreId=" + genreId + "&" + "year=" + year);
+        Collection<Film> mostLikedFilms = filmService.getMostLikedFilms(count, genreId, year);
         log.info("<== GET /films/popular?count="
                 + "Самые популярные фильмы в количестве: " + mostLikedFilms.size());
         return mostLikedFilms;
@@ -72,12 +85,24 @@ public class FilmController {
     }
 
     @GetMapping("/mpa/{id}")
-    public MPARating getMpaRatingById(@PathVariable long id) {
+    public MPARating getMpaRatingById(@PathVariable int id) {
         log.info("==> GET /mpa/" + id);
         MPARating mpaRating = filmService.getMPARatingById(id);
         log.info("<== GET /mpa/" + id
                 + " Рейтинг c id = " + id + " : " + mpaRating.getName());
         return mpaRating;
+    }
+
+    @GetMapping("/films/common")
+    public List<Film> commonFilms(@RequestParam long userId, @RequestParam long friendId) {
+        return filmService.commonFilms(userId, friendId);
+    }
+
+    @GetMapping("/films/search")
+    public Collection<Film> searchFilms(
+            @RequestParam(required = false) String query,
+            @RequestParam(name = "by", required = false) List<String> criteria) {
+        return filmService.searchFilms(query, criteria);
     }
 
     //========================/POST/==============================//
@@ -118,7 +143,12 @@ public class FilmController {
                 + " от пользователя с ID=" + userId + " удален");
     }
 
-
+    @DeleteMapping("/films/{filmId}")
+    public void deleteFilm(@PathVariable long filmId) {
+        log.info("==> DELETE /films/" + filmId);
+        filmService.deleteFilm(filmId);
+        log.info("<== DELETE /films/" + filmId + " Фильм " + filmId + " удален");
+    }
 }
 
 

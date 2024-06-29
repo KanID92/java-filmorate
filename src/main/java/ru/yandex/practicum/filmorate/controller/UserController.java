@@ -3,18 +3,21 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.feed.FeedService;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
-
+    private final FeedService feedService;
 
     @GetMapping("/users")
     public Collection<User> getAll() {
@@ -84,5 +87,25 @@ public class UserController {
         log.info("Удалена запись дружбы пользователя с id=" + id + " с пользователем с id=" + friendId);
     }
 
+    @GetMapping("/users/{id}/recommendations")
+    public List<Film> recommendFilms(@PathVariable("id") long userId) {
+        return userService.recommendFilms(userId);
+    }
 
+    @GetMapping("/users/{id}/likes")
+    public List<Long> findAllFilmLikes(@PathVariable("id") long userId) {
+        return userService.findAllFilmLikes(userId);
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(@PathVariable long userId) {
+        log.info("==> DELETE /users/" + userId);
+        userService.deleteById(userId);
+        log.info("Удален пользовател с id=" + userId);
+    }
+
+    @GetMapping("/users/{id}/feed")
+    public Collection<Feed> getFeeds(@PathVariable("id") long userId) {
+        return feedService.getFeeds(userId);
+    }
 }

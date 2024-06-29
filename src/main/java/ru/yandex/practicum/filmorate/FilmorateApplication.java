@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 @SpringBootApplication
 public class FilmorateApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(FilmorateApplication.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(FilmorateApplication.class, args);
         log.trace("Начало работы веб-сервера.");
-	}
+    }
 
 }

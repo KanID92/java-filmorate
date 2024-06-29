@@ -1,4 +1,4 @@
 # java-filmorate
 
 Описание базы данных
-![](schema.png)
+![](ER-diagram.png)

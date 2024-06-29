@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.repository.FriendRepository;
-import ru.yandex.practicum.filmorate.repository.JdbcUserRepository;
+import ru.yandex.practicum.filmorate.repository.friend.FriendRepository;
+import ru.yandex.practicum.filmorate.repository.user.JdbcUserRepository;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -155,7 +155,7 @@ class JdbcUserRepositoryTest {
         user.setLogin(testUser1Login);
         user.setName(testUser1Name);
         user.setBirthday(testUser1Birthday);
-        user.setFrindsSet(testUser1FriendsSet);
+        user.setFriendsSet(testUser1FriendsSet);
         return user;
     }
 
@@ -166,7 +166,7 @@ class JdbcUserRepositoryTest {
         user.setLogin(testUser2Login);
         user.setName(testUser2Name);
         user.setBirthday(testUser2Birthday);
-        user.setFrindsSet(testUser2FriendsSet);
+        user.setFriendsSet(testUser2FriendsSet);
         return user;
     }
 
@@ -177,7 +177,7 @@ class JdbcUserRepositoryTest {
         user.setLogin(testUser3Login);
         user.setName(testUser3Name);
         user.setBirthday(testUser3Birthday);
-        user.setFrindsSet(testUser3FriendsSet);
+        user.setFriendsSet(testUser3FriendsSet);
         return user;
     }
 
